@@ -1,16 +1,23 @@
 const fs = require('fs-extra');
 const glob = require('glob');
 const postcss = require('postcss');
-const autoprefixer = require('autoprefixer');
 const CleanCss = require('clean-css');
 const chokidar = require('chokidar');
 const debounce = require('lodash.debounce');
 
 module.exports = watch => glob('Packages/Sites/*', (err, sitePackages) => {
-	sitePackages.forEach(sitePackage => {
+	if (err) {
+		throw err;
+	}
+
+	const buildCssForSitepackage = sitePackage => {
 		const [sitePackageName] = sitePackage.split('/').slice(-1);
-		const cssFilePattern = `${sitePackage}/Resources/Private/**/*.css`
+		const cssFilePattern = `${sitePackage}/Resources/Private/**/*.css`;
 		const build = debounce(() => glob(`${sitePackage}/Resources/Private/**/*.css`, (err, cssFiles) => {
+			if (err) {
+				throw err;
+			}
+
 			const entireCssString = cssFiles.map(cssFile => fs.readFileSync(cssFile, 'utf8')).join('\n');
 
 			console.log(`Building styles for site package "${sitePackageName}"...`);
@@ -37,5 +44,7 @@ module.exports = watch => glob('Packages/Sites/*', (err, sitePackages) => {
 		} else {
 			build();
 		}
-	});
+	};
+
+	sitePackages.forEach(buildCssForSitepackage);
 });
