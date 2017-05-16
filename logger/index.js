@@ -26,7 +26,7 @@ module.exports.message = (message, color = chalk.white) =>
 	console.log(`${chalk.white(`[${now()}]`)} ${color(message)}`);
 
 module.exports.exit = (message, exitCode = 0) => {
-	console.log(`${chalk.white(`[EXIT: ${now()}]`)} ${( exitCode === 0 ? chalk.green : chalk.red  )(message)}`);
+	console.log(`${chalk.white(`[EXIT: ${now()}]`)} ${(exitCode === 0 ? chalk.green : chalk.red)(message)}`);
 	console.log('');
 	process.exit(exitCode);
 };
