@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 switch (process.env.npm_lifecycle_event) {
 	case 'build:css':
 		require('./build/css')();
