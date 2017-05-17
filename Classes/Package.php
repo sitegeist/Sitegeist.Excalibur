@@ -68,6 +68,8 @@ class Package extends BasePackage
 
     public function buildFrontend()
     {
-        exec('yarn build:js');
+        if (php_sapi_name() !== 'cli') {
+            exec('yarn build:js');
+        }
     }
 }

@@ -1,0 +1,5 @@
+Neos:
+  Flow:
+    package:
+      packagesPathByType:
+        neos-excalibur-component: 'Excalibur.Components'
