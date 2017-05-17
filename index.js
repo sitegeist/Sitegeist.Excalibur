@@ -23,4 +23,4 @@ switch (process.env.npm_lifecycle_event) {
 		break;
 }
 
-logger.exit(`${process.env.npm_lifecycle_event} successfully completed :)`);
+//logger.exit(`${process.env.npm_lifecycle_event} successfully completed :)`);
