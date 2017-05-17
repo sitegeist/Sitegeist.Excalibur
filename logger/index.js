@@ -9,16 +9,17 @@ const now = () => {
 
 module.exports.header = () => {
 	console.log('');
-	console.log(chalk.yellow.bgBlack(`
-                 _ _                  _     _
-       _     ___(_) |_ ___  __ _  ___(_)___| |_
-     _| |_  / __| | __/ _ \\/ _\` |/ _ \\ / __| __|
-    |_   _| \\__ \\ | ||  __/ (_| |  __/ \\__ \\ |_
-      |_|   |___/_|\\__\\___|\\__, |\\___|_|___/\\__|
-                           |___/
+	console.log(chalk.yellow.bgBlack('                                                                         '));
+    console.log(chalk.yellow.bgBlack('                  _ _                  _     _                           '));
+    console.log(chalk.yellow.bgBlack('        _     ___(_) |_ ___  __ _  ___(_)___| |_                         '));
+    console.log(chalk.yellow.bgBlack('      _| |_  / __| | __/ _ \\/ _\` |/ _ \\ / __| __|                        '));
+    console.log(chalk.yellow.bgBlack('     |_   _| \\__ \\ | ||  __/ (_| |  __/ \\__ \\ |_                         '));
+    console.log(chalk.yellow.bgBlack('       |_|   |___/_|\\__\\___|\\__, |\\___|_|___/\\__|                        '));
+    console.log(chalk.yellow.bgBlack('                            |___/                                        '));
+	console.log(chalk.yellow.bgBlack('                                                                         '));
+    console.log(chalk.yellow.bgBlack('                                    Neos Build Essentials ${version}     '));
+	console.log(chalk.yellow.bgBlack('                                                                         '));
 
-                                   Neos Build Essentials ${version}
-	`));
 	console.log('');
 };
 
