@@ -1,0 +1,19 @@
+{
+    "description": "",
+    "type": "neos-package",
+    "name": "sitegeist/excalibur",
+    "require": {
+        "neos/flow": "*",
+        "packagefactory/atomicfusion": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sitegeist\\Excalibur\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Sitegeist.Excalibur"
+        }
+    }
+}
