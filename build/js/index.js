@@ -1,10 +1,12 @@
 const path = require('path');
 const glob = require('glob');
+const fs = require('fs-extra');
 const webpack = require('webpack');
 const tmp = require('tmp');
 const uuid = require('uuid');
 
 const logger = require('../../logger');
+const resolveFusionDependencies = require('../../utils/resolveFusionDependencies');
 const generateEntryFile = require('./generate-entry-file');
 
 module.exports = () => {
@@ -13,7 +15,10 @@ module.exports = () => {
 	const buildJsForSitePackage = sitePackage => {
 		const tmpDir = tmp.dirSync();
 		const tmpFile = path.join(tmpDir.name, sitePackage.split('/').slice(-1)[0], uuid.v4() + '.js');
-		const components = glob.sync(path.join(sitePackage, 'Resources/Private/Fusion/**/Component.js'));
+		const components = resolveFusionDependencies(sitePackage.split('/').slice(-1)[0])
+			.map(lookupPath => path.join(lookupPath, 'Component.js'))
+			.filter(filePath => fs.pathExistsSync(filePath));
+
 		const webpackConfig = {
 			entry: {
 				Main: tmpFile

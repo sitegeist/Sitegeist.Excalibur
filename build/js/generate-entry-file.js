@@ -9,7 +9,7 @@ const components = [
 ${components.map(component => `
 	{
 		identifier: '${component.identifier}',
-		initialize: require('${path.join(process.cwd(), component.path)}')
+		initialize: require('${component.path}')
 	},
 `)}
 ];
