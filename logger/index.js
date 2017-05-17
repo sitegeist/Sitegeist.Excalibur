@@ -12,7 +12,7 @@ module.exports.header = () => {
 	console.log(chalk.yellow.bgBlack('                                                                         '));
 	console.log(chalk.yellow.bgBlack('                  _ _                  _     _                           '));
 	console.log(chalk.yellow.bgBlack('        _     ___(_) |_ ___  __ _  ___(_)___| |_                         '));
-	console.log(chalk.yellow.bgBlack('      _| |_  / __| | __/ _ \\/ _` |/ _ \\ / __| __|                       '));
+	console.log(chalk.yellow.bgBlack('      _| |_  / __| | __/ _ \\/ _` |/ _ \\ / __| __|                        '));
 	console.log(chalk.yellow.bgBlack('     |_   _| \\__ \\ | ||  __/ (_| |  __/ \\__ \\ |_                         '));
 	console.log(chalk.yellow.bgBlack('       |_|   |___/_|\\__\\___|\\__, |\\___|_|___/\\__|                        '));
 	console.log(chalk.yellow.bgBlack('                            |___/                                        '));

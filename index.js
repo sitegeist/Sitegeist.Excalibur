@@ -14,7 +14,6 @@ switch (process.env.npm_lifecycle_event) {
 		break;
 
 	case 'build:js':
-		logger.message('Starting JS build...');
 		require('./build/js')();
 		break;
 
@@ -22,5 +21,3 @@ switch (process.env.npm_lifecycle_event) {
 		logger.exit(`Unknown command: ${process.env.npm_lifecycle_event}`, 1);
 		break;
 }
-
-//logger.exit(`${process.env.npm_lifecycle_event} successfully completed :)`);

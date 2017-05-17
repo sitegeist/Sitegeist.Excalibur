@@ -17,7 +17,7 @@ ${components.map(component => `
 const bootstrap = () => {
 	components.forEach(({identifier, initialize}) => {
 		[].slice.call(document.querySelectorAll('[data-component="' + identifier + '"]'))
-			.forEach(el => initialize(el));
+			.forEach(el => initialize.default ? initialize.default(el) : initialize(el));
 	})
 };
 
@@ -29,7 +29,7 @@ module.exports = (filePath, components) => {
 	fs.ensureFileSync(filePath);
 	fs.writeFileSync(filePath, template(components.map(
 		component => ({
-			identifier: component.split('Resources/Private/Fusion/Components')[1].split('/Component.js')[0],
+			identifier: component.split('Resources/Private/Fusion/')[1].split('/Component.js')[0],
 			path: component
 		})
 	)));
