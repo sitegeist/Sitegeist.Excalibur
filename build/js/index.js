@@ -38,15 +38,31 @@ module.exports = watch => {
 						});
 					};
 				})()
-			]
+			],
+			module: {
+				rules: [
+					{
+						test: /\.js$/,
+						use: [
+							{
+								loader: 'babel-loader',
+								options: {
+									presets: ['env', 'react', 'react-optimize', 'stage-0']
+								}
+							}
+						],
+						exclude: [/node_modules/]
+					}
+				]
+			}
 		};
 
 		const compiler = webpack(webpackConfig);
-		const build = debounce(() => compiler.run(err => {
+		const build = debounce(() => compiler.run((err, stats) => {
 			const method = watch ? 'message' : 'exit';
 
-			if (err) {
-				console.error(err);
+			if (err || stats.hasErrors()) {
+				console.error(err, stats);
 				logger[method](`${process.env.npm_lifecycle_event} failed :(`, 1);
 			} else {
 				logger[method](`${process.env.npm_lifecycle_event} successfully completed :)`);
