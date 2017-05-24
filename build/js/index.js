@@ -44,8 +44,13 @@ module.exports = () => {
 		//
 
 		const compiler = webpack(webpackConfig);
-		compiler.run((err, stats) => {
-			logger.exit(`${process.env.npm_lifecycle_event} successfully completed :)`);
+		compiler.run(err => {
+			if (err) {
+				console.error(err);
+				logger.exit(`${process.env.npm_lifecycle_event} failed :(`, 1);
+			} else {
+				logger.exit(`${process.env.npm_lifecycle_event} successfully completed :)`);
+			}
 		});
 	};
 
