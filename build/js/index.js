@@ -4,12 +4,14 @@ const fs = require('fs-extra');
 const webpack = require('webpack');
 const tmp = require('tmp');
 const uuid = require('uuid');
+const chokidar = require('chokidar');
+const debounce = require('lodash.debounce');
 
 const logger = require('../../logger');
 const resolveFusionDependencies = require('../../utils/resolveFusionDependencies');
 const generateEntryFile = require('./generate-entry-file');
 
-module.exports = () => {
+module.exports = watch => {
 	const sitePackages = glob.sync('Packages/Sites/*');
 
 	const buildJsForSitePackage = sitePackage => {
@@ -39,19 +41,28 @@ module.exports = () => {
 			]
 		};
 
-		//
-		// Autogenerate bootstrap code
-		//
-
 		const compiler = webpack(webpackConfig);
-		compiler.run(err => {
+		const build = debounce(() => compiler.run(err => {
+			const method = watch ? 'message' : 'exit';
+
 			if (err) {
 				console.error(err);
-				logger.exit(`${process.env.npm_lifecycle_event} failed :(`, 1);
+				logger[method](`${process.env.npm_lifecycle_event} failed :(`, 1);
 			} else {
-				logger.exit(`${process.env.npm_lifecycle_event} successfully completed :)`);
+				logger[method](`${process.env.npm_lifecycle_event} successfully completed :)`);
 			}
-		});
+		}), 200);
+
+		const jsFilePattern = path.join(sitePackage, '**/*.js');
+		if (watch) {
+			chokidar.watch(jsFilePattern)
+				.on('ready', build)
+				.on('add', build)
+				.on('change', build)
+				.on('unlink', build);
+		} else {
+			build();
+		}
 	};
 
 	sitePackages.forEach(buildJsForSitePackage);
