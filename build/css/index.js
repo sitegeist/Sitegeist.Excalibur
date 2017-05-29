@@ -13,7 +13,8 @@ module.exports = watch => glob('Packages/Sites/*', (err, sitePackages) => {
 	const buildCssForSitepackage = sitePackage => {
 		const [sitePackageName] = sitePackage.split('/').slice(-1);
 		const cssFilePattern = `${sitePackage}/Resources/Private/**/*.css`;
-		const build = debounce(() => glob(`${sitePackage}/Resources/Private/**/*.css`, (err, cssFiles) => {
+
+		const build = debounce(() => glob(cssFilePattern, (err, cssFiles) => {
 			if (err) {
 				throw err;
 			}
@@ -32,7 +33,7 @@ module.exports = watch => glob('Packages/Sites/*', (err, sitePackages) => {
 				}).minify(result.css).styles);
 
 				console.log(`Successfully written "${sitePackage}/Resources/Public/Styles/Main.css" :)`);
-			});
+			}).catch(err => console.error(err));
 		}), 100);
 
 		if (watch) {
