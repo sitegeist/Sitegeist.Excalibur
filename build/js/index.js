@@ -47,7 +47,11 @@ module.exports = watch => {
 							{
 								loader: 'babel-loader',
 								options: {
-									presets: ['env', 'react', 'react-optimize', 'stage-0']
+									presets: [
+										'babel-preset-react',
+										'babel-preset-react-optimize',
+										'babel-preset-stage-0'
+									].map(require.resolve)
 								}
 							}
 						],
