@@ -28,7 +28,11 @@ module.exports = (filePath, components) => {
 	fs.ensureFileSync(filePath);
 	fs.writeFileSync(filePath, template(components.map(
 		component => ({
-			identifier: component.split('Resources/Private/Fusion/')[1].split('/Component.js')[0],
+			identifier: component.split('Resources/Private/Fusion/')[1]
+				.split('/Component.js')[0]
+				.split('/component.js')[0]
+				.split('/Index.js')[0]
+				.split('/index.js')[0],
 			path: component
 		})
 	)));

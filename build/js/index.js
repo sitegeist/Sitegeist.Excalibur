@@ -18,7 +18,13 @@ module.exports = watch => {
 		const tmpDir = tmp.dirSync();
 		const tmpFile = path.join(tmpDir.name, sitePackage.split('/').slice(-1)[0], uuid.v4() + '.js');
 		const components = resolveFusionDependencies(sitePackage.split('/').slice(-1)[0])
-			.map(lookupPath => path.join(lookupPath, 'Component.js'))
+			.reduce((lookupPaths, currentPath) => {
+				lookupPaths.push(path.join(currentPath, 'Component.js'));
+				lookupPaths.push(path.join(currentPath, 'component.js'));
+				lookupPaths.push(path.join(currentPath, 'Index.js'));
+				lookupPaths.push(path.join(currentPath, 'index.js'));
+				return lookupPaths;
+			}, [])
 			.filter(filePath => fs.pathExistsSync(filePath));
 
 		const webpackConfig = {
