@@ -4,8 +4,6 @@ const fs = require('fs-extra');
 const webpack = require('webpack');
 const tmp = require('tmp');
 const uuid = require('uuid');
-const chokidar = require('chokidar');
-const debounce = require('lodash.debounce');
 
 const logger = require('../../logger');
 const resolveFusionDependencies = require('../../utils/resolveFusionDependencies');
@@ -17,15 +15,6 @@ module.exports = watch => {
 	const buildJsForSitePackage = sitePackage => {
 		const tmpDir = tmp.dirSync();
 		const tmpFile = path.join(tmpDir.name, sitePackage.split('/').slice(-1)[0], uuid.v4() + '.js');
-		const components = resolveFusionDependencies(sitePackage.split('/').slice(-1)[0])
-			.reduce((lookupPaths, currentPath) => {
-				lookupPaths.push(path.join(currentPath, 'Component.js'));
-				lookupPaths.push(path.join(currentPath, 'component.js'));
-				lookupPaths.push(path.join(currentPath, 'Index.js'));
-				lookupPaths.push(path.join(currentPath, 'index.js'));
-				return lookupPaths;
-			}, [])
-			.filter(filePath => fs.pathExistsSync(filePath));
 
 		const webpackConfig = {
 			entry: {
@@ -36,12 +25,26 @@ module.exports = watch => {
 				path: path.join(process.cwd(), sitePackage, 'Resources/Public/JavaScript')
 			},
 			plugins: [
+				new webpack.WatchIgnorePlugin([tmpFile]),
 				new (function () {
 					this.apply = compiler => {
-						compiler.plugin('run', (_, done) => {
+						const generate = (_, done) => {
+							const components = resolveFusionDependencies(sitePackage.split('/').slice(-1)[0])
+								.reduce((lookupPaths, currentPath) => {
+									lookupPaths.push(path.join(currentPath, 'Component.js'));
+									lookupPaths.push(path.join(currentPath, 'component.js'));
+									lookupPaths.push(path.join(currentPath, 'Index.js'));
+									lookupPaths.push(path.join(currentPath, 'index.js'));
+									return lookupPaths;
+								}, [])
+								.filter(filePath => fs.pathExistsSync(filePath));
+
 							generateEntryFile(tmpFile, components);
 							done();
-						});
+						};
+
+						compiler.plugin('run', generate);
+						compiler.plugin('watch-run', generate);
 					};
 				})()
 			],
@@ -68,26 +71,28 @@ module.exports = watch => {
 		};
 
 		const compiler = webpack(webpackConfig);
-		const build = debounce(() => compiler.run((err, stats) => {
+		const build = (err, stats) => {
 			const method = watch ? 'message' : 'exit';
 
 			if (err || stats.hasErrors()) {
+				const message = `${process.env.npm_lifecycle_event} failed :(`;
+
 				console.error(err, stats);
-				logger[method](`${process.env.npm_lifecycle_event} failed :(`, 1);
+
+				if (watch) {
+					logger.message(message);
+				} else {
+					logger.exit(message, 1);
+				}
 			} else {
 				logger[method](`${process.env.npm_lifecycle_event} successfully completed :)`);
 			}
-		}), 200);
+		};
 
-		const jsFilePattern = path.join(sitePackage, '**/*.js');
 		if (watch) {
-			chokidar.watch(jsFilePattern)
-				.on('ready', build)
-				.on('add', build)
-				.on('change', build)
-				.on('unlink', build);
+			compiler.watch({}, build);
 		} else {
-			build();
+			compiler.run(build);
 		}
 	};
 

@@ -9,7 +9,7 @@ switch (process.env.npm_lifecycle_event) {
 		require('./build/css')();
 		break;
 
-	case 'watch:build:css':
+	case 'watch:css':
 		require('./build/css')(true);
 		break;
 
@@ -17,7 +17,7 @@ switch (process.env.npm_lifecycle_event) {
 		require('./build/js')();
 		break;
 
-	case 'watch:build:js':
+	case 'watch:js':
 		require('./build/js')(true);
 		break;
 
