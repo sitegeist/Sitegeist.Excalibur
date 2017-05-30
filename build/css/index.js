@@ -5,6 +5,8 @@ const CleanCss = require('clean-css');
 const chokidar = require('chokidar');
 const debounce = require('lodash.debounce');
 
+const readStyleSettings = require('./readStyleSettings');
+
 module.exports = watch => glob('Packages/Sites/*', (err, sitePackages) => {
 	if (err) {
 		throw err;
@@ -20,12 +22,16 @@ module.exports = watch => glob('Packages/Sites/*', (err, sitePackages) => {
 			}
 
 			const entireCssString = cssFiles.map(cssFile => fs.readFileSync(cssFile, 'utf8')).join('\n');
+			const styleSettings = readStyleSettings(sitePackageName);
 
 			console.log(`Building styles for site package "${sitePackageName}"...`);
 
 			postcss([
 				require('autoprefixer'),
-				require('precss')()
+				require('precss')(),
+				require('postcss-map')({
+					maps: [styleSettings]
+				})
 			]).process(entireCssString).then(result => {
 				fs.ensureDirSync(`${sitePackage}/Resources/Public/Styles`);
 				fs.writeFileSync(`${sitePackage}/Resources/Public/Styles/Main.css`, new CleanCss({

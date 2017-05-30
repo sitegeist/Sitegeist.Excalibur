@@ -16,7 +16,10 @@ ${components.map(component => `
 const bootstrap = () => {
 	components.forEach(({identifier, initialize}) => {
 		[].slice.call(document.querySelectorAll('[data-component="' + identifier + '"]'))
-			.forEach(el => initialize.default ? initialize.default(el) : initialize(el));
+			.forEach(el => {
+				const props = el.dataset.props ? JSON.parse(el.dataset.props) : {};
+				initialize.default ? initialize.default(el, props) : initialize(el, props);
+			});
 	})
 };
 
