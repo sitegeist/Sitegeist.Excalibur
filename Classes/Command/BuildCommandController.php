@@ -39,6 +39,11 @@ class BuildCommandController extends CommandController
         $fusionCode = Files::getFileContents($rootPath);
         $fusionAst = $this->fusionParser->parse($fusionCode, $rootPath);
 
+        if (!array_key_exists('__prototypes', $fusionAst)) {
+            $this->outputLine('[]');
+            $this->quit(0);
+        }
+
         $prototypes = array_keys($fusionAst['__prototypes']);
 
         $self = $this;
