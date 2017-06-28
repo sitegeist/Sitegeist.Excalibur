@@ -63,14 +63,16 @@ module.exports = watch => {
 									].map(require.resolve)
 								}
 							}
-						],
-						exclude: [/node_modules/]
+						]
 					}
 				]
 			}
 		};
 
-		const compiler = webpack(webpackConfig);
+		const overriddenWebpackConfig = fs.existsSync(path.join(process.cwd(), 'excalibur.config.js')) ?
+			require(path.join(process.cwd(), 'excalibur.config.js'))['build:js'](webpackConfig) : webpackConfig;
+
+		const compiler = webpack(overriddenWebpackConfig);
 		const build = (err, stats) => {
 			const method = watch ? 'message' : 'exit';
 
