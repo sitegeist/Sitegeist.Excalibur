@@ -18,7 +18,11 @@ module.exports = watch => {
 
 		const webpackConfig = {
 			entry: {
-				Main: tmpFile
+				Main: [
+					'babel-polyfill',
+					'custom-event-polyfill',
+					tmpFile
+				]
 			},
 			output: {
 				filename: '[name].js',
@@ -57,9 +61,10 @@ module.exports = watch => {
 								loader: 'babel-loader',
 								options: {
 									presets: [
+										'babel-preset-es2015',
+										'babel-preset-stage-0',
 										'babel-preset-react',
-										'babel-preset-react-optimize',
-										'babel-preset-stage-0'
+										'babel-preset-react-optimize'
 									].map(require.resolve)
 								}
 							}
