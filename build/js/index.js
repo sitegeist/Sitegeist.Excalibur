@@ -9,6 +9,8 @@ const logger = require('../../logger');
 const resolveFusionDependencies = require('../../utils/resolveFusionDependencies');
 const generateEntryFile = require('./generate-entry-file');
 
+const env = process.env.NODE_ENV || development;
+
 module.exports = watch => {
 	const sitePackages = glob.sync('Packages/Sites/*');
 
@@ -50,8 +52,17 @@ module.exports = watch => {
 						compiler.plugin('run', generate);
 						compiler.plugin('watch-run', generate);
 					};
-				})()
-			],
+				})(),
+				new webpack.DefinePlugin({
+					'process.env.NODE_ENV': JSON.stringify(env)
+				})
+			].concat(
+				env === 'production' ? [
+					new webpack.optimize.UglifyJsPlugin({
+						sourceMap: true
+					})
+				] : []
+			),
 			module: {
 				rules: [
 					{
@@ -61,10 +72,10 @@ module.exports = watch => {
 								loader: 'babel-loader',
 								options: {
 									presets: [
-										'babel-preset-es2015',
-										'babel-preset-stage-0',
 										'babel-preset-react',
-										'babel-preset-react-optimize'
+										'babel-preset-react-optimize',
+										'babel-preset-es2015',
+										'babel-preset-stage-0'
 									].map(require.resolve)
 								}
 							}
