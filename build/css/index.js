@@ -27,6 +27,7 @@ module.exports = watch => glob('Packages/Sites/*', (err, sitePackages) => {
 			console.log(`Building styles for site package "${sitePackageName}"...`);
 
 			postcss([
+				require('postcss-object-fit-images'),
 				require('autoprefixer'),
 				require('precss')(),
 				require('postcss-map')({
