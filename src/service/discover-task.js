@@ -6,7 +6,7 @@ module.exports = async (taskName, directory) => {
 		return false;
 	}
 
-	const possiblePathToTask = path.join(directory, taskName.replace(':', '-'));
+	const possiblePathToTask = path.join(directory, taskName.replace(/:/g, '-'));
 
 	if (await fs.pathExists(possiblePathToTask)) {
 		try {
