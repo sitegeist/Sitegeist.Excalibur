@@ -1,27 +1,37 @@
 #!/usr/bin/env node
+const path = require('path');
+const argv = require('minimist')(process.argv.slice(2));
 
-const logger = require('./logger');
+const packageJson = require(process.cwd() + '/package.json');
+const composerJson = require(process.cwd() + '/composer.json');
 
-logger.header();
+const logger = require('./src/logger');
+const {discoverTask} = require('./src/service');
 
-switch (process.env.npm_lifecycle_event) {
-	case 'build:css':
-		require('./build/css')();
-		break;
+const runner = async () => {
+	const taskName = process.env.npm_lifecycle_event || argv.t || argv.task;
+	const pathToTask = await discoverTask(taskName, path.join(__dirname, 'src/tasks'));
 
-	case 'watch:css':
-		require('./build/css')(true);
-		break;
+	if (!pathToTask) {
+		console.log(`Could not find Task ${taskName}`);
+	}
 
-	case 'build:js':
-		require('./build/js')();
-		break;
+	const task = require(pathToTask || './src/tasks/help');
 
-	case 'watch:js':
-		require('./build/js')(true);
-		break;
+	try {
+		await task({
+			taskName,
+			packageJson,
+			composerJson,
+			argv,
+			discoverTask,
+			logger
+		});
+	} catch (err) {
+		console.error(err);
+		console.error(`Task ${taskName} failed :(`);
+		process.exit(1);
+	}
+};
 
-	default:
-		logger.exit(`Unknown command: ${process.env.npm_lifecycle_event}`, 1);
-		break;
-}
+runner();
