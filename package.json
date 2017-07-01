@@ -1,12 +1,12 @@
 {
-  "name": "@sitegeist/neos-build-essentials",
+  "name": "sitegeist-excalibur",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "lint": "xo"
   },
   "bin": {
-    "sitegeist-neos-build-essentials": "./index.js"
+    "sitegeist-excalibur": "./index.js"
   },
   "dependencies": {
     "autoprefixer": "^6.7.7",
