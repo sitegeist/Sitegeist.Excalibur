@@ -9,7 +9,7 @@ const logger = require('../../logger');
 const resolveFusionDependencies = require('../../utils/resolveFusionDependencies');
 const generateEntryFile = require('./generate-entry-file');
 
-const env = process.env.NODE_ENV || development;
+const env = process.env.NODE_ENV || 'development';
 
 module.exports = watch => {
 	const sitePackages = glob.sync('Packages/Sites/*');

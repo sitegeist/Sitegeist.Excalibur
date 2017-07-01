@@ -6,7 +6,7 @@ const packageJson = require(process.cwd() + '/package.json');
 const composerJson = require(process.cwd() + '/composer.json');
 
 const logger = require('./src/logger');
-const {discoverTask} = require('./src/service');
+const {discoverTask, resolveLocalConfiguration, resolveLookupPaths} = require('./src/service');
 
 const runner = async () => {
 	const taskName = process.env.npm_lifecycle_event || argv.t || argv.task;
@@ -25,6 +25,8 @@ const runner = async () => {
 			composerJson,
 			argv,
 			discoverTask,
+			resolveLocalConfiguration,
+			resolveLookupPaths,
 			logger
 		});
 	} catch (err) {

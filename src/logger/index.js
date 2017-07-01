@@ -2,6 +2,21 @@ const chalk = require('chalk');
 const padEnd = require('lodash.padend');
 const {version} = require('../../package.json');
 
+const hangInThereMessages = [
+	'In the end, everything will be okay. If it\'s not okay, it\'s not yet the end.',
+	'The difficulties of life are intended to make us better, not bitter.',
+	'When life gives you a hundred reasons to cry, show life that you have a thousand reasons to smile.',
+	'One minute of patience, ten years of peace.',
+
+	'"In the end, it\'s not the years in your life that count. It\'s the life in your years." Abraham Lincoln',
+	'"Patience is necessary, and one cannot reap immediately where one has sown." Soren Kierkegaard',
+	'"There is more to life than increasing its speed." Mahatma Gandhi',
+	'"In three words I can sum up everything I\'ve learned about life: it goes on." Robert Frost',
+	'"Patience is bitter, but its fruit is sweet." Jean-Jacques Rousseau',
+	'"He that can have patience can have what he will." Benjamin Franklin',
+	'"All human wisdom is summed up in two words – wait and hope." Alexandre Dumas Père'
+];
+
 const now = () => {
 	const date = new Date();
 
@@ -23,8 +38,18 @@ module.exports.header = taskLabel => {
 	console.log('');
 };
 
-module.exports.message = (message, color = chalk.white) =>
-	console.log(`${chalk.white(`[${now()}]`)} ${color(message)}`);
+module.exports.message = (symbol, message, color = chalk.white) =>
+	console.log(`[${symbol}] ${chalk.white(`[${now()}]`)} ${color(message)}`);
+
+module.exports.info = message => module.exports.message('⏵', message);
+module.exports.success = message => module.exports.message('✓', message, chalk.green);
+module.exports.warning = message => module.exports.message('⚠', message, chalk.yellow);
+module.exports.error = message => module.exports.message('✗', message, chalk.red);
+module.exports.hangin = () => module.exports.message(
+	'ᗄ',
+	`Hang in there! ${hangInThereMessages[Math.floor(Math.random() * hangInThereMessages.length)]}`,
+	chalk.gray
+);
 
 module.exports.exit = (message, exitCode = 0) => {
 	console.log(`${chalk.white(`[EXIT: ${now()}]`)} ${(exitCode === 0 ? chalk.green : chalk.red)(message)}`);
