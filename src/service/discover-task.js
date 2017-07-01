@@ -6,10 +6,22 @@ module.exports = async (taskName, directory) => {
 		return false;
 	}
 
-	const pathToTask = path.join(directory, taskName.replace(':', '-'));
+	const possiblePathToTask = path.join(directory, taskName.replace(':', '-'));
 
-	if (await fs.pathExists(pathToTask)) {
-		return pathToTask;
+	if (await fs.pathExists(possiblePathToTask)) {
+		try {
+			require.resolve(possiblePathToTask);
+			return possiblePathToTask;
+		} catch (err) {
+		}
+	}
+
+	const possibleModuleName = `sitegeist-excalibur-task-${taskName}`;
+
+	try {
+		require.resolve(possibleModuleName);
+		return possibleModuleName;
+	} catch (err) {
 	}
 
 	return false;
