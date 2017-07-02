@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const formatErrors = require('./format-errors');
 const createWebpackConfig = require('./create-webpack-config');
 
-module.exports = ({resolveLocalConfiguration, resolveLookupPaths, argv, logger, watch}) => async sitePackageName => {
+module.exports = ({resolveLocalConfiguration, resolveLookupPaths, argv, logger, watch, error, success}) => async sitePackageName => {
 	logger.info(`Processing ${sitePackageName}...`);
 
 	const hangInThereInterval = setInterval(logger.hangin, 7000);
@@ -13,9 +13,13 @@ module.exports = ({resolveLocalConfiguration, resolveLookupPaths, argv, logger, 
 		if (err) {
 			throw err;
 		} else if (stats.hasErrors()) {
-			formatErrors(stats, logger);
+			formatErrors(stats, sitePackageName, logger);
+
+			if (!watch) {
+				error(`JavaScript build for ${sitePackageName} failed :(`);
+			}
 		} else {
-			logger.success(`JavaScript for ${sitePackageName} successfully built :)`);
+			success(`JavaScript for ${sitePackageName} successfully built :)`);
 		}
 	};
 

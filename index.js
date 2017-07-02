@@ -8,6 +8,20 @@ const composerJson = require(process.cwd() + '/composer.json');
 const logger = require('./src/logger');
 const {discoverTask, resolveLocalConfiguration, resolveLookupPaths} = require('./src/service');
 
+const error = message => {
+	console.log('');
+	logger.error(message);
+	console.log('');
+	process.exit(1);
+};
+
+const success = message => {
+	console.log('');
+	logger.success(message);
+	console.log('');
+	process.exit(0);
+};
+
 const runner = async () => {
 	const taskName = process.env.npm_lifecycle_event || argv.t || argv.task;
 	const pathToTask = await discoverTask(taskName, path.join(__dirname, 'src/tasks'));
@@ -27,12 +41,12 @@ const runner = async () => {
 			discoverTask,
 			resolveLocalConfiguration,
 			resolveLookupPaths,
-			logger
+			logger,
+			error,
+			success
 		});
 	} catch (err) {
-		console.error(err);
-		console.error(`Task ${taskName} failed :(`);
-		process.exit(1);
+		error(err.message || err);
 	}
 };
 

@@ -2,7 +2,7 @@ const glob = require('glob');
 
 const createBuildJavaScriptForSitePackage = require('./build-javascript-for-site-package');
 
-module.exports = ({logger, resolveLocalConfiguration, resolveLookupPaths, argv}, watch = false) => {
+module.exports = ({logger, resolveLocalConfiguration, resolveLookupPaths, argv, error, success}, watch = false) => {
 	logger.header('Build JavaScript');
 
 	logger.info('Loading Neos CMS site packages...');
@@ -23,7 +23,9 @@ module.exports = ({logger, resolveLocalConfiguration, resolveLookupPaths, argv},
 		watch,
 		resolveLocalConfiguration,
 		resolveLookupPaths,
-		argv
+		argv,
+		error,
+		success
 	});
 
 	return Promise.all(
