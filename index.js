@@ -6,7 +6,12 @@ const packageJson = require(process.cwd() + '/package.json');
 const composerJson = require(process.cwd() + '/composer.json');
 
 const logger = require('./src/logger');
-const {discoverTask, resolveLocalConfiguration, resolveLookupPaths} = require('./src/service');
+const {
+	discoverTask,
+	resolveLocalConfiguration,
+	resolveLookupPaths,
+	resolveStyleSettings
+} = require('./src/service');
 
 const error = message => {
 	console.log('');
@@ -41,6 +46,7 @@ const runner = async () => {
 			discoverTask,
 			resolveLocalConfiguration,
 			resolveLookupPaths,
+			resolveStyleSettings,
 			logger,
 			error,
 			success

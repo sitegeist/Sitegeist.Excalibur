@@ -1,12 +1,13 @@
 const glob = require('glob');
 
-module.exports = (header, task) => (api, watch) => {
-	api.logger.header(header(api, watch));
+module.exports = (header, task) => (api, watch, skipHeader = false) => {
+	if (!skipHeader) {
+		api.logger.header(header(api, watch));
+		api.logger.info('Loading Neos CMS site packages...');
 
-	api.logger.info('Loading Neos CMS site packages...');
-
-	if (watch) {
-		api.logger.info('(Pro Tip: If you add another site package, you need to restart this watch task)');
+		if (watch) {
+			api.logger.info('(Pro Tip: If you add another site package, you need to restart this watch task)');
+		}
 	}
 
 	const sitePackagePaths = glob.sync('Packages/Sites/*');
@@ -21,7 +22,7 @@ module.exports = (header, task) => (api, watch) => {
 			const sitePackageName = sitePackagePath.split('/').slice(-1)[0];
 
 			api.logger.info(`Processing ${sitePackageName}...`);
-			task(api, watch, sitePackageName);
+			task(api, watch, sitePackageName, sitePackagePath);
 		}
 	);
 };

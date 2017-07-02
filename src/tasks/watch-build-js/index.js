@@ -1,3 +1,3 @@
 const buildJs = require('../build-js');
 
-module.exports = (...args) => buildJs(...args, true);
+module.exports = (api, skipHeader = false) => buildJs(api, true, skipHeader);
