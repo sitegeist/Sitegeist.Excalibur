@@ -3,14 +3,16 @@ const paramCase = require('param-case');
 
 const discoverLocalFile = require('./discover-local-file');
 
-module.exports = async (command, options = {}) => {
+module.exports = async (logger, error, command, options = {}) => {
 	const flowExecutable = await discoverLocalFile('flow');
 
 	if (!flowExecutable) {
-		throw new Error('Could not find Neos Flow executable.');
+		error('Could not find Neos Flow executable.');
 	}
 
-	return execSync(`${flowExecutable} ${command} ${Object.keys(options).map(
+	const result = execSync(`${flowExecutable} ${command} ${Object.keys(options).map(
 		key => ` --${paramCase(key)}="${options[key]}"`
 	)}`).toString();
+
+	return result;
 };

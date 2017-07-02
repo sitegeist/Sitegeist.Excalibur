@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const padEnd = require('lodash.padend');
+const pad = require('lodash.pad');
 const padStart = require('lodash.padstart');
 const {version} = require('../../package.json');
 
@@ -22,7 +22,7 @@ const now = () => {
 	const date = new Date();
 	const year = date.getFullYear();
 	const month = padStart(date.getMonth() + 1, 2, '0');
-	const day = padStart(date.getDay(), 2, '0');
+	const day = padStart(date.getUTCDate(), 2, '0');
 	const hours = padStart(date.getHours(), 2, '0');
 	const minutes = padStart(date.getMinutes(), 2, '0');
 	const seconds = padStart(date.getSeconds(), 2, '0');
@@ -32,16 +32,19 @@ const now = () => {
 
 module.exports.header = taskLabel => {
 	console.log('');
-	console.log(chalk.yellow.bgBlack('                                                                         '));
-	console.log(chalk.yellow.bgBlack('                         _ _                  _     _                    '));
-	console.log(chalk.yellow.bgBlack('               _     ___(_) |_ ___  __ _  ___(_)___| |_                  '));
-	console.log(chalk.yellow.bgBlack('             _| |_  / __| | __/ _ \\/ _` |/ _ \\ / __| __|                 '));
-	console.log(chalk.yellow.bgBlack('            |_   _| \\__ \\ | ||  __/ (_| |  __/ \\__ \\ |_                  '));
-	console.log(chalk.yellow.bgBlack('              |_|   |___/_|\\__\\___|\\__, |\\___|_|___/\\__|                 '));
-	console.log(chalk.yellow.bgBlack('                                   |___/                                 '));
-	console.log(chalk.yellow.bgBlack(padEnd(`           EXCALIBUR ⚔ ${version}              Task: ${taskLabel}`, 73)));
-	console.log(chalk.yellow.bgBlack('                                                                         '));
-	console.log(chalk.yellow.bgBlack('                                                                         '));
+	console.log(chalk.yellow.bgBlack('                                                                                                    '));
+	console.log(chalk.yellow.bgBlack('                                       _ _                  _     _                                 '));
+	console.log(chalk.yellow.bgBlack('                             _     ___(_) |_ ___  __ _  ___(_)___| |_                               '));
+	console.log(chalk.yellow.bgBlack('                           _| |_  / __| | __/ _ \\/ _` |/ _ \\ / __| __|                              '));
+	console.log(chalk.yellow.bgBlack('                          |_   _| \\__ \\ | ||  __/ (_| |  __/ \\__ \\ |_                               '));
+	console.log(chalk.yellow.bgBlack('                            |_|   |___/_|\\__\\___|\\__, |\\___|_|___/\\__|                              '));
+	console.log(chalk.yellow.bgBlack('                                                 |___/                                              '));
+	console.log(chalk.yellow.bgBlack('                                                                                                    '));
+	console.log(chalk.yellow.bgBlack(pad(`EXCALIBUR ⚔ ${version}`, 100)));
+	console.log(chalk.yellow.bgBlack('                                                                                                    '));
+	console.log(chalk.yellow.bgBlack(pad(`Task(s): ${taskLabel}`, 100)));
+	console.log(chalk.yellow.bgBlack('                                                                                                    '));
+	console.log(chalk.yellow.bgBlack('                                                                                                    '));
 
 	console.log('');
 };
@@ -58,9 +61,3 @@ module.exports.hangin = () => module.exports.message(
 	`Hang in there! ${hangInThereMessages[Math.floor(Math.random() * hangInThereMessages.length)]}`,
 	chalk.gray
 );
-
-module.exports.exit = (message, exitCode = 0) => {
-	console.log(`${chalk.white(`[EXIT: ${now()}]`)} ${(exitCode === 0 ? chalk.green : chalk.red)(message)}`);
-	console.log('');
-	process.exit(exitCode); // eslint-disable-line unicorn/no-process-exit
-};

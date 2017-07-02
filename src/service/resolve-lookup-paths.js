@@ -1,5 +1,6 @@
 const executeFlowCommand = require('./execute-flow-command');
 
-module.exports = sitePackageKey => executeFlowCommand('build:printlookuppathsforsitepackage', {
-	sitePackageKey
-});
+module.exports = (logger, error, sitePackageKey) =>
+	executeFlowCommand(logger, error, 'build:printlookuppathsforsitepackage', {
+		sitePackageKey
+	});

@@ -5,8 +5,7 @@ const createDefaultConfiguration = options => [
 	{'postcss-map': {maps: [options.cssMapValues]}}
 ];
 
-module.exports = async ({resolveLocalConfiguration, resolveStyleSettings, sitePackageName, logger, error}) => {
-	const styleSettings = JSON.parse(await resolveStyleSettings(sitePackageName));
+module.exports = async ({resolveLocalConfiguration, styleSettings, logger, error}) => {
 	const options = {
 		legacySupport: false,
 		cssMapValues: styleSettings

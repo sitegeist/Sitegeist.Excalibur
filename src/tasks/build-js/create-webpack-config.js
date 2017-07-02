@@ -3,7 +3,8 @@ const webpack = require('webpack');
 
 const GenerateEntryFilePlugin = require('./plugins/generate-entry-file');
 
-module.exports = async ({resolveLocalConfiguration, resolveLookupPaths, argv}, sitePackageName) => {
+module.exports = async (api, sitePackageName) => {
+	const {resolveLocalConfiguration, lookupPaths, argv} = api;
 	const tmpFile = path.join(process.cwd(), 'Data/Temporary/Sitegeist.Excalibur/', sitePackageName, 'entry.js');
 	const isProduction = argv.p || argv.production;
 
@@ -21,7 +22,7 @@ module.exports = async ({resolveLocalConfiguration, resolveLookupPaths, argv}, s
 		},
 		plugins: [
 			new webpack.WatchIgnorePlugin([tmpFile]),
-			new GenerateEntryFilePlugin(sitePackageName, resolveLookupPaths, tmpFile)
+			new GenerateEntryFilePlugin(sitePackageName, lookupPaths, tmpFile)
 		].concat(
 			isProduction ? [
 				new webpack.DefinePlugin({

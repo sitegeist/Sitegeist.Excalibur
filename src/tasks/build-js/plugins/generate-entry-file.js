@@ -14,10 +14,10 @@ ${components.map(component => `
 	{
 		identifier: '${component.identifier}',
 		initialize: require('${component.path}')
-	},
+	}
 `)}
 ]);
-`;
+`.trim();
 
 const generateEntryFile = async (filePath, components) => {
 	await fs.ensureFile(filePath);
@@ -32,8 +32,7 @@ const generateEntryFile = async (filePath, components) => {
 	)));
 };
 
-const generateEntryFileForSitePackage = async (sitePackageName, resolveLookupPaths, tmpFile) => {
-	const lookupPaths = JSON.parse(await resolveLookupPaths(sitePackageName));
+const generateEntryFileForSitePackage = async (sitePackageName, lookupPaths, tmpFile) => {
 	const components = lookupPaths.reduce((lookupPaths, currentPath) => [
 		...lookupPaths,
 		...allowedComponentFiles.map(
