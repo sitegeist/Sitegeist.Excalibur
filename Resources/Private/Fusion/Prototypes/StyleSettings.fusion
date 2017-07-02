@@ -1,0 +1,5 @@
+prototype(Sitegeist.Excalibur:StyleSettings) {
+    @class = 'Sitegeist\\Excalibur\\Fusion\\StyleSettingsImplementation'
+
+    path = ''
+}
