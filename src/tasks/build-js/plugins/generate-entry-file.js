@@ -9,14 +9,11 @@ const allowedComponentFiles = [
 ];
 
 const template = components => `
-require('sitegeist-excalibur/runtime')([
+require('sitegeist-excalibur/runtime')({
 ${components.map(component => `
-	{
-		identifier: '${component.identifier}',
-		initialize: require('${component.path}')
-	}
+	'${component.identifier}': require('${component.path}')
 `)}
-]);
+});
 `.trim();
 
 const generateEntryFile = async (filePath, components) => {
