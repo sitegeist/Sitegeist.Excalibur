@@ -1,34 +1,54 @@
-const glob = require('glob');
+const webpack = require('webpack');
 
-const createBuildJavaScriptForSitePackage = require('./build-javascript-for-site-package');
+const createSitePackageTask = require('../create-site-package-task');
+const formatErrors = require('./format-errors');
+const createWebpackConfig = require('./create-webpack-config');
 
-module.exports = ({logger, resolveLocalConfiguration, resolveLookupPaths, argv, error, success}, watch = false) => {
-	logger.header(watch ? 'Watch JavaScript Build' : 'Build JavaScript');
+module.exports = createSitePackageTask(
+	//
+	// Header depends on whether the user is watching
+	//
+	(_, watch) => watch ? 'Watch JavaScript Build' : 'Build JavaScript',
 
-	logger.info('Loading Neos CMS site packages...');
+	//
+	// Build the site package JavaScript
+	//
+	async ({resolveLocalConfiguration, resolveLookupPaths, argv, logger, error, success}, watch, sitePackageName) => {
+		const hangInThereInterval = setInterval(logger.hangin, 7000);
+		const handleSuccess = watch ? logger.success : success;
+		const handleError = watch ? logger.error : error;
 
-	if (watch) {
-		logger.info('(Pro Tip: If you add another site package, you need to restart this watch task)');
+		const build = (err, stats) => {
+			clearInterval(hangInThereInterval);
+
+			if (watch) {
+				logger.info(`Watching "${sitePackageName}"...`);
+			}
+
+			if (err) {
+				throw err;
+			} else if (stats.hasErrors()) {
+				formatErrors(stats, sitePackageName, logger);
+				handleError(`JavaScript build for "${sitePackageName}" failed :(`);
+			} else {
+				handleSuccess(`JavaScript for "${sitePackageName}" successfully built :)`);
+			}
+		};
+
+		const webpackConfig = await createWebpackConfig(
+			{
+				resolveLocalConfiguration,
+				resolveLookupPaths,
+				argv
+			},
+			sitePackageName
+		);
+		const compiler = webpack(webpackConfig);
+
+		if (watch) {
+			compiler.watch({}, build);
+		} else {
+			compiler.run(build);
+		}
 	}
-
-	const sitePackagePaths = glob.sync('Packages/Sites/*');
-
-	if (!sitePackagePaths || !sitePackagePaths.length) {
-		logger.warning('Looks like there are no site packages in your distribution. You should come back later ;)');
-		return;
-	}
-
-	const buildJavaScriptForSitePackage = createBuildJavaScriptForSitePackage({
-		logger,
-		watch,
-		resolveLocalConfiguration,
-		resolveLookupPaths,
-		argv,
-		error,
-		success
-	});
-
-	sitePackagePaths.forEach(
-		sitePackagePath => buildJavaScriptForSitePackage(sitePackagePath.split('/').slice(-1)[0])
-	);
-};
+);
