@@ -14,14 +14,14 @@ const {
 	resolveStyleSettings
 } = require('./src/service');
 
-const error = message => {
+const error = logger => message => {
 	console.log('');
 	logger.error(message);
 	console.log('');
 	process.exit(1);
 };
 
-const success = message => {
+const success = logger => message => {
 	console.log('');
 	logger.success(message);
 	console.log('');
@@ -57,27 +57,29 @@ const runner = async (paths, watch) => {
 
 	await Promise.all(
 		sitePackagePaths.map(
-			async sitePackagePath => {
+			sitePackagePath => {
 				const sitePackageName = sitePackagePath.split('/').slice(-1)[0];
-				const api = {};
-
-				api.argv = argv;
-				api.sitePackageName = sitePackageName;
-				api.sitePackagePath = sitePackagePath;
-				api.watch = watch;
-				api.packageJson = packageJson;
-				api.composerJson = composerJson;
-				api.lookupPaths = JSON.parse(await resolveLookupPaths(logger, error, sitePackageName));
-				api.styleSettings = JSON.parse(await resolveStyleSettings(logger, error, sitePackageName));
-				api.logger = logger;
-				api.error = error;
-				api.success = success;
-				api.resolveLocalConfiguration = resolveLocalConfiguration;
-				api.hangInThere = hangInThere(api);
-
 				logger.info(`Processing ${sitePackageName}...`);
 
-				return Promise.all(tasks.map(({run}) => run(api)));
+				return Promise.all(tasks.map(async ({id, run}) => {
+					const api = {};
+
+					api.argv = argv;
+					api.sitePackageName = sitePackageName;
+					api.sitePackagePath = sitePackagePath;
+					api.watch = watch;
+					api.packageJson = packageJson;
+					api.composerJson = composerJson;
+					api.lookupPaths = JSON.parse(await resolveLookupPaths(logger, error, sitePackageName));
+					api.styleSettings = JSON.parse(await resolveStyleSettings(logger, error, sitePackageName));
+					api.logger = logger.create(id);
+					api.error = error(api.logger);
+					api.success = success(api.logger);
+					api.resolveLocalConfiguration = resolveLocalConfiguration;
+					api.hangInThere = hangInThere(api);
+
+					return run(api);
+				}));
 			}
 		)
 	);
@@ -97,7 +99,7 @@ const app = async () => {
 		await runner(paths, watch);
 	} catch (err) {
 		console.error(err);
-		error(err.message || err);
+		error(logger)(err.message || err);
 	}
 };
 

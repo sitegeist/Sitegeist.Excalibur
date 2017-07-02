@@ -7,6 +7,7 @@ const CleanCss = require('clean-css');
 
 const createPostCssConfiguration = require('./create-postcss-configuration');
 
+module.exports.id = 'build:css';
 module.exports.label = 'Build CSS';
 module.exports.isWatchable = true;
 

@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const formatErrors = require('./format-errors');
 const createWebpackConfig = require('./create-webpack-config');
 
+module.exports.id = 'build:js';
 module.exports.label = 'Build JavaScript';
 module.exports.isWatchable = true;
 

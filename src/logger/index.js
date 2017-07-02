@@ -3,21 +3,6 @@ const pad = require('lodash.pad');
 const padStart = require('lodash.padstart');
 const {version} = require('../../package.json');
 
-const hangInThereMessages = [
-	'In the end, everything will be okay. If it\'s not okay, it\'s not yet the end.',
-	'The difficulties of life are intended to make us better, not bitter.',
-	'When life gives you a hundred reasons to cry, show life that you have a thousand reasons to smile.',
-	'One minute of patience, ten years of peace.',
-
-	'"In the end, it\'s not the years in your life that count. It\'s the life in your years." Abraham Lincoln',
-	'"Patience is necessary, and one cannot reap immediately where one has sown." Soren Kierkegaard',
-	'"There is more to life than increasing its speed." Mahatma Gandhi',
-	'"In three words I can sum up everything I\'ve learned about life: it goes on." Robert Frost',
-	'"Patience is bitter, but its fruit is sweet." Jean-Jacques Rousseau',
-	'"He that can have patience can have what he will." Benjamin Franklin',
-	'"All human wisdom is summed up in two words – wait and hope." Alexandre Dumas Père'
-];
-
 const now = () => {
 	const date = new Date();
 	const year = date.getFullYear();
@@ -29,6 +14,22 @@ const now = () => {
 
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+const create = scope => {
+	const logger = {};
+
+	logger.message = (symbol, message, color = chalk.white) =>
+		console.log(`[${symbol}][${pad(scope.substring(0, 11), 11)}]${chalk.white(`[${now()}]`)} ${color(message)}`);
+
+	logger.info = message => logger.message('⏵', message);
+	logger.success = message => logger.message('✓', message, chalk.green);
+	logger.warning = message => logger.message('⚠', message, chalk.yellow);
+	logger.error = message => logger.message('✗', message, chalk.red);
+
+	return logger;
+};
+
+const globalLogger = create('excalibur');
 
 module.exports.header = taskLabel => {
 	console.log('');
@@ -49,15 +50,9 @@ module.exports.header = taskLabel => {
 	console.log('');
 };
 
-module.exports.message = (symbol, message, color = chalk.white) =>
-	console.log(`[${symbol}] ${chalk.white(`[${now()}]`)} ${color(message)}`);
-
-module.exports.info = message => module.exports.message('⏵', message);
-module.exports.success = message => module.exports.message('✓', message, chalk.green);
-module.exports.warning = message => module.exports.message('⚠', message, chalk.yellow);
-module.exports.error = message => module.exports.message('✗', message, chalk.red);
-module.exports.hangin = () => module.exports.message(
-	'ᗄ',
-	`Hang in there! ${hangInThereMessages[Math.floor(Math.random() * hangInThereMessages.length)]}`,
-	chalk.gray
-);
+module.exports.create = create;
+module.exports.message = globalLogger.message;
+module.exports.info = globalLogger.info;
+module.exports.success = globalLogger.success;
+module.exports.warning = globalLogger.warning;
+module.exports.error = globalLogger.error;
