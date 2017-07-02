@@ -52,6 +52,7 @@ const runner = async () => {
 			success
 		});
 	} catch (err) {
+		console.error(err);
 		error(err.message || err);
 	}
 };
