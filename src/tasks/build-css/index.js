@@ -34,6 +34,10 @@ module.exports.run = async api => {
 		}
 
 		handleSuccess(`CSS for "${sitePackageName}" successfully built :)`);
+
+		if (watch) {
+			logger.info(`Watching "${sitePackageName}"...`);
+		}
 	};
 	const debouncedBuild = debounce(build, 500);
 

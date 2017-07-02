@@ -13,10 +13,6 @@ module.exports.run = async api => {
 	const handleError = watch ? logger.error : error;
 
 	const build = hangInThere((err, stats) => {
-		if (watch) {
-			logger.info(`Watching "${sitePackageName}"...`);
-		}
-
 		if (err) {
 			throw err;
 		} else if (stats.hasErrors()) {
@@ -25,12 +21,17 @@ module.exports.run = async api => {
 		} else {
 			handleSuccess(`JavaScript for "${sitePackageName}" successfully built :)`);
 		}
+
+		if (watch) {
+			logger.info(`Watching "${sitePackageName}"...`);
+		}
 	});
 
 	const webpackConfig = await createWebpackConfig(api, sitePackageName);
 	const compiler = webpack(webpackConfig);
 
 	if (watch) {
+		logger.info(`Please wait until the initial build for "${sitePackageName}" is ready.`);
 		compiler.watch({}, build);
 	} else {
 		compiler.run(build);
