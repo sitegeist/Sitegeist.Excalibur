@@ -29,6 +29,7 @@
     "glob": "^7.1.1",
     "lodash.debounce": "^4.0.8",
     "lodash.padend": "^4.6.1",
+    "lodash.padstart": "^4.6.1",
     "minimist": "^1.2.0",
     "node-yaml": "^3.1.0",
     "param-case": "^2.1.1",
