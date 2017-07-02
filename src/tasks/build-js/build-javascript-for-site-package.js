@@ -9,17 +9,22 @@ module.exports = ({resolveLocalConfiguration, resolveLookupPaths, argv, logger, 
 	const hangInThereInterval = setInterval(logger.hangin, 7000);
 
 	const build = (err, stats) => {
+		const handleSuccess = watch ? logger.success : success;
+		const handleError = watch ? logger.error : error;
+
 		clearInterval(hangInThereInterval);
+
+		if (watch) {
+			logger.info(`Watching "${sitePackageName}"...`);
+		}
+
 		if (err) {
 			throw err;
 		} else if (stats.hasErrors()) {
 			formatErrors(stats, sitePackageName, logger);
-
-			if (!watch) {
-				error(`JavaScript build for ${sitePackageName} failed :(`);
-			}
+			handleError(`JavaScript build for "${sitePackageName}" failed :(`);
 		} else {
-			success(`JavaScript for ${sitePackageName} successfully built :)`);
+			handleSuccess(`JavaScript for "${sitePackageName}" successfully built :)`);
 		}
 	};
 

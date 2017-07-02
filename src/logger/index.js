@@ -39,7 +39,7 @@ module.exports.header = taskLabel => {
 	console.log(chalk.yellow.bgBlack('            |_   _| \\__ \\ | ||  __/ (_| |  __/ \\__ \\ |_                  '));
 	console.log(chalk.yellow.bgBlack('              |_|   |___/_|\\__\\___|\\__, |\\___|_|___/\\__|                 '));
 	console.log(chalk.yellow.bgBlack('                                   |___/                                 '));
-	console.log(chalk.yellow.bgBlack(padEnd(`           EXCALIBUR ⚔ ${version}                  Task: ${taskLabel}`, 73)));
+	console.log(chalk.yellow.bgBlack(padEnd(`           EXCALIBUR ⚔ ${version}              Task: ${taskLabel}`, 73)));
 	console.log(chalk.yellow.bgBlack('                                                                         '));
 	console.log(chalk.yellow.bgBlack('                                                                         '));
 
