@@ -3,3 +3,8 @@ Neos:
     package:
       packagesPathByType:
         neos-excalibur-component: 'Excalibur.Components'
+Sitegeist:
+  Excalibur:
+    componentPathConvention:
+      default: Sitegeist\Excalibur\Domain\Service\DefaultComponentPathConvention
+      perPackage: {}

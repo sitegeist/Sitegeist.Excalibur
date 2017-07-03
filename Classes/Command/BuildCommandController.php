@@ -13,6 +13,7 @@ use Neos\Flow\Package\PackageManagerInterface;
 use Neos\Fusion\Core\Parser;
 use Neos\Utility\Files;
 use Sitegeist\Excalibur\Service\StyleSettingsService;
+use Sitegeist\Excalibur\Domain\Service\ComponentPathConventionDiscoveryService;
 
 class BuildCommandController extends CommandController
 {
@@ -34,41 +35,64 @@ class BuildCommandController extends CommandController
      */
     protected $styleSettingsService;
 
+	/**
+	 * @Flow\Inject
+	 * @var ComponentPathConventionDiscoveryService
+	 */
+	protected $componentPathConventionDiscoveryService;
+
     /**
      * This is for build purposes only!
      *
      * @param string $sitePackageKey
      * @return void
      */
-    public function printLookupPathsForSitePackageCommand($sitePackageKey)
+    public function printPackageInformationCommand()
     {
-        $rootPath = sprintf('resource://%s/Private/Fusion/Root.fusion', $sitePackageKey);
-        $fusionCode = Files::getFileContents($rootPath);
-        $fusionAst = $this->fusionParser->parse($fusionCode, $rootPath);
+		$info = [];
+		foreach ($this->packageManager->getFilteredPackages('active', null, 'neos-site') as $package) {
+			$packageKey = $package->getPackageKey();
+			$componentPathConvention = $this->componentPathConventionDiscoveryService
+				->getComponentPathConventionForPackage($packageKey);
 
-        if (!array_key_exists('__prototypes', $fusionAst)) {
-            $this->outputLine('[]');
-            $this->quit(0);
-        }
+			$info[$packageKey] = [
+				'packageKey' => $packageKey,
+				'paths' => [
+					'package' => $package->getPackagePath(),
+					'resources' => $package->getResourcesPath(),
+					'components' => $package->getResourcesPath() . $componentPathConvention->getComponentsDirectoryPath()
+				]
+			];
+		}
 
-        $prototypes = array_keys($fusionAst['__prototypes']);
-
-        $self = $this;
-        $lookupPaths = array_map(function ($prototypeName) use ($self) {
-            list($packageKey, $componentName) = explode(':', $prototypeName);
-
-            return sprintf(
-                '%s/Resources/Private/Fusion/%s',
-                $self->packageManager->getPackage($packageKey)->getPackagePath(),
-                implode('/', explode('.', $componentName))
-            );
-        }, $prototypes);
-
-        $this->outputLine(
-            json_encode(
-                $lookupPaths
-            )
-        );
+		$this->output(json_encode($info));
+        // $rootPath = sprintf('resource://%s/Private/Fusion/Root.fusion', $sitePackageKey);
+        // $fusionCode = Files::getFileContents($rootPath);
+        // $fusionAst = $this->fusionParser->parse($fusionCode, $rootPath);
+		//
+        // if (!array_key_exists('__prototypes', $fusionAst)) {
+        //     $this->outputLine('[]');
+        //     $this->quit(0);
+        // }
+		//
+        // $prototypes = array_keys($fusionAst['__prototypes']);
+		//
+        // $self = $this;
+        // $lookupPaths = array_map(function ($prototypeName) use ($self) {
+        //     list($packageKey, $componentName) = explode(':', $prototypeName);
+		//
+        //     return sprintf(
+        //         '%s/Resources/Private/Fusion/%s',
+        //         $self->packageManager->getPackage($packageKey)->getPackagePath(),
+        //         implode('/', explode('.', $componentName))
+        //     );
+        // }, $prototypes);
+		//
+        // $this->outputLine(
+        //     json_encode(
+        //         $lookupPaths
+        //     )
+        // );
     }
 
     /**

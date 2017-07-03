@@ -30,24 +30,27 @@ interface ComponentPathConventionInterface
 	/**
 	 * Get the corresponding prototype name for a fusion file.
 	 *
+	 * @param string $packageKey
 	 * @param string $pathToFusionFile
 	 * @return string
 	 */
-	public function getPrototypeNameFromPathToFusionFile($pathToFusionFile);
+	public function getPrototypeNameFromPathToFusionFile($packageKey, $pathToFusionFile);
 
 	/**
 	 * Get the lookup path for component-related javascript files
 	 *
+	 * @param string $prototypeName
 	 * @return sring
 	 */
-	public function getJavaScriptLookupPathFromPrototypeName();
+	public function getJavaScriptLookupPathFromPrototypeName($prototypeName);
 
 	/**
 	 * Get the lookup path for component-related css files
 	 *
+	 * @param string $prototypeName
 	 * @return sring
 	 */
-	public function getCssLookupPathFromPrototypeName();
+	public function getCssLookupPathFromPrototypeName($prototypeName);
 
 	/**
 	 * Get any additional javascript files that should be loaded
