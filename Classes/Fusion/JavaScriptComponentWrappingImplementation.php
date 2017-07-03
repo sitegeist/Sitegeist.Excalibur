@@ -82,9 +82,6 @@ class JavaScriptComponentWrappingImplementation extends AbstractFusionObject
         $prototypeName = explode('<', $componentPathSegment);
         $prototypeName = substr($prototypeName[1], 0, -1);
 
-        $componentName = explode(':', $prototypeName);
-        $componentName = str_replace('.', '/', $componentName[1]);
-
-        return $componentName;
+        return $prototypeName;
     }
 }

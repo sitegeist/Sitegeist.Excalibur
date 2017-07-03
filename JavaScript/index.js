@@ -10,7 +10,7 @@ const logger = require('./src/logger');
 const {
 	hangInThere,
 	resolveLocalConfiguration,
-	resolveLookupPaths,
+	resolvePackageInformation,
 	resolveStyleSettings
 } = require('./src/service');
 
@@ -48,30 +48,26 @@ const runner = async (paths, watch) => {
 		logger.info('(Tip: If you add another site package, you need to restart this watch task)');
 	}
 
-	const sitePackagePaths = glob.sync('Packages/Sites/*');
+	const packageInformation = await resolvePackageInformation();
 
-	if (!sitePackagePaths || !sitePackagePaths.length) {
+	if (!packageInformation || !Object.keys(packageInformation).length) {
 		logger.warning('Looks like there are no site packages in your distribution. You should come back later ;)');
 		process.exit(1);
 	}
 
 	await Promise.all(
-		sitePackagePaths.map(
-			sitePackagePath => {
-				const sitePackageName = sitePackagePath.split('/').slice(-1)[0];
-				logger.info(`Processing ${sitePackageName}...`);
+		Object.values(packageInformation).map(
+			flowPackage => {
+				logger.info(`Processing ${flowPackage.packageKey}...`);
 
 				return Promise.all(tasks.map(async ({id, run}) => {
 					const api = {};
 
 					api.argv = argv;
-					api.sitePackageName = sitePackageName;
-					api.sitePackagePath = sitePackagePath;
+					api.flowPackage = flowPackage;
 					api.watch = watch;
 					api.packageJson = packageJson;
 					api.composerJson = composerJson;
-					api.lookupPaths = JSON.parse(await resolveLookupPaths(logger, error, sitePackageName));
-					api.styleSettings = JSON.parse(await resolveStyleSettings(logger, error, sitePackageName));
 					api.logger = logger.create(id);
 					api.error = error(api.logger);
 					api.success = success(api.logger);

@@ -8,7 +8,7 @@ module.exports.label = 'Build JavaScript';
 module.exports.isWatchable = true;
 
 module.exports.run = async api => {
-	const {hangInThere, logger, error, success, watch, sitePackageName} = api;
+	const {hangInThere, logger, error, success, watch, flowPackage} = api;
 	const handleSuccess = watch ? logger.success : success;
 	const handleError = watch ? logger.error : error;
 
@@ -16,22 +16,22 @@ module.exports.run = async api => {
 		if (err) {
 			throw err;
 		} else if (stats.hasErrors()) {
-			formatErrors(stats, sitePackageName, logger);
-			handleError(`JavaScript build for "${sitePackageName}" failed :(`);
+			formatErrors(stats, flowPackage.packageKey, logger);
+			handleError(`JavaScript build for "${flowPackage.packageKey}" failed :(`);
 		} else {
-			handleSuccess(`JavaScript for "${sitePackageName}" successfully built :)`);
+			handleSuccess(`JavaScript for "${flowPackage.packageKey}" successfully built :)`);
 		}
 
 		if (watch) {
-			logger.info(`Watching "${sitePackageName}"...`);
+			logger.info(`Watching "${flowPackage.packageKey}"...`);
 		}
 	});
 
-	const webpackConfig = await createWebpackConfig(api, sitePackageName);
+	const webpackConfig = await createWebpackConfig(api, flowPackage.packageKey);
 	const compiler = webpack(webpackConfig);
 
 	if (watch) {
-		logger.info(`Please wait until the initial build for "${sitePackageName}" is ready.`);
+		logger.info(`Please wait until the initial build for "${flowPackage.packageKey}" is ready.`);
 		compiler.watch({}, build);
 	} else {
 		compiler.run(build);

@@ -3,9 +3,9 @@ const webpack = require('webpack');
 
 const GenerateEntryFilePlugin = require('./plugins/generate-entry-file');
 
-module.exports = async (api, sitePackageName) => {
-	const {resolveLocalConfiguration, lookupPaths, argv} = api;
-	const tmpFile = path.join(process.cwd(), 'Data/Temporary/Sitegeist.Excalibur/', sitePackageName, 'entry.js');
+module.exports = async api => {
+	const {resolveLocalConfiguration, lookupPaths, argv, flowPackage} = api;
+	const tmpFile = path.join(process.cwd(), 'Data/Temporary/Sitegeist.Excalibur/', flowPackage.packageKey, 'entry.js');
 	const isProduction = argv.p || argv.production;
 
 	const defaultConfiguration = {
@@ -18,11 +18,11 @@ module.exports = async (api, sitePackageName) => {
 		},
 		output: {
 			filename: '[name].js',
-			path: path.join(process.cwd(), 'Packages/Sites', sitePackageName, 'Resources/Public/JavaScript')
+			path: path.join(process.cwd(), 'Packages/Sites', flowPackage.packageKey, 'Resources/Public/JavaScript')
 		},
 		plugins: [
 			new webpack.WatchIgnorePlugin([tmpFile]),
-			new GenerateEntryFilePlugin(sitePackageName, lookupPaths, tmpFile)
+			new GenerateEntryFilePlugin(flowPackage, tmpFile)
 		].concat(
 			isProduction ? [
 				new webpack.DefinePlugin({

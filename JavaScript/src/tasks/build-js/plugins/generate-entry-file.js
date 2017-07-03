@@ -1,13 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-const allowedComponentFiles = [
-	'Component.js',
-	'component.js',
-	'Index.js',
-	'index.js'
-];
-
 const template = components => `
 require('sitegeist-excalibur/JavaScript/runtime')({
 ${components.map(component => `
@@ -18,33 +11,26 @@ ${components.map(component => `
 
 const generateEntryFile = async (filePath, components) => {
 	await fs.ensureFile(filePath);
-	await fs.writeFile(filePath, template(components.map(
-		component => ({
-			identifier: allowedComponentFiles.reduce(
-				(identifier, fileName) => identifier.split(`/${fileName}`)[0],
-				component.split('Resources/Private/Fusion/')[1]
-			),
-			path: component
-		})
-	)));
+	await fs.writeFile(filePath, template(components));
 };
 
-const generateEntryFileForSitePackage = async (sitePackageName, lookupPaths, tmpFile) => {
-	const components = lookupPaths.reduce((lookupPaths, currentPath) => [
-		...lookupPaths,
-		...allowedComponentFiles.map(
-			fileName => path.join(currentPath, fileName)
-		)
+const generateEntryFileForFlowPackage = async (flowPackage, tmpFile) => {
+	const components = Object.values(flowPackage.components).reduce((paths, component) => [
+		...paths,
+		...component.javascriptLookupPaths.map(lookupPath => ({
+			identifier: component.prototypeName,
+			path: path.join(flowPackage.paths.components, lookupPath)
+		}))
 	], [])
-	.filter(filePath => fs.pathExistsSync(filePath));
+	.filter(component => fs.pathExistsSync(component.path));
 
 	await generateEntryFile(tmpFile, components);
 };
 
-module.exports = function (sitePackageName, resolveLookupPaths, tmpFile) {
+module.exports = function (flowPackage, tmpFile) {
 	this.apply = compiler => {
 		const generate = (_, done) =>
-			generateEntryFileForSitePackage(sitePackageName, resolveLookupPaths, tmpFile).then(done);
+			generateEntryFileForFlowPackage(flowPackage, tmpFile).then(done);
 
 		compiler.plugin('run', generate);
 		compiler.plugin('watch-run', generate);

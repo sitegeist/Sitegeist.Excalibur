@@ -7,14 +7,23 @@ namespace Sitegeist\Excalibur\Service;
  *                                                                        */
 
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Package\Package;
 use Neos\Fusion\Core\Runtime as FusionRuntime;
+use Neos\Fusion\Core\Parser as FusionParser;
 use PackageFactory\AtomicFusion\FusionObjects\ComponentImplementation;
+use Neos\Utility\Files;
 
 /**
  * @Flow\Scope("singleton")
  */
 class FusionService
 {
+	/**
+	 * @Flow\Inject
+	 * @var FusionParser
+	 */
+	protected $fusionParser;
+
     /**
      * Removes one level from a fusion path
      *
@@ -97,4 +106,25 @@ class FusionService
 
         return $packageName;
     }
+
+	/**
+	 * Get all available fusion prototype names for a given flow package
+	 *
+	 * @param Package $package
+	 * @return array
+	 */
+	public function getAllPrototypeNamesFromPackage(Package $package)
+	{
+		$rootPath = Files::concatenatePaths([$package->getResourcesPath(), 'Private/Fusion/Root.fusion']);
+		$fusionCode = Files::getFileContents($rootPath);
+		$fusionAst = $this->fusionParser->parse($fusionCode, $rootPath);
+
+		if (!array_key_exists('__prototypes', $fusionAst)) {
+			return [];
+		}
+
+		$prototypeNames = array_keys($fusionAst['__prototypes']);
+
+		return $prototypeNames;
+	}
 }

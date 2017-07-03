@@ -33,7 +33,10 @@ class DefaultComponentPathConvention implements ComponentPathConventionInterface
 		list(,$componentSubPart) = explode(':', $prototypeName);
 
 		$pathToComponent = explode('.', $componentSubPart);
-		array_shift($pathToComponent);
+
+		if ($pathToComponent[0] === 'Component') {
+			array_shift($pathToComponent);
+		}
 		$pathToComponent = implode('/', $pathToComponent);
 
 		return sprintf('%s/index.fusion', $pathToComponent);
@@ -59,26 +62,48 @@ class DefaultComponentPathConvention implements ComponentPathConventionInterface
 	 * Get the lookup path for component-related javascript files
 	 *
 	 * @param string $prototypeName
-	 * @return sring
+	 * @return array
 	 */
-	public function getJavaScriptLookupPathFromPrototypeName($prototypeName)
+	public function getJavaScriptLookupPathsFromPrototypeName($prototypeName)
 	{
 		$pathToFusionFile = $this->getPathToFusionFileFromPrototypeName($prototypeName);
+		$componentDirectory = dirname($pathToFusionFile);
 
-		return sprintf('%sindex.js', dirname($pathToFusionFile));
+		$componentIdentifier = explode('/', $componentDirectory);
+		$componentIdentifier = array_pop($componentIdentifier);
+
+		return [
+			sprintf('%s/index.js', $componentDirectory),
+			sprintf('%s/Index.js', $componentDirectory),
+			sprintf('%s/component.js', $componentDirectory),
+			sprintf('%s/Component.js', $componentDirectory),
+			sprintf('%s/%s.js', $componentDirectory, lcfirst($componentIdentifier)),
+			sprintf('%s/%s.js', $componentDirectory, $componentIdentifier)
+		];
 	}
 
 	/**
 	 * Get the lookup path for component-related css files
 	 *
 	 * @param string $prototypeName
-	 * @return sring
+	 * @return array
 	 */
-	public function getCssLookupPathFromPrototypeName($prototypeName)
+	public function getCssLookupPathsFromPrototypeName($prototypeName)
 	{
 		$pathToFusionFile = $this->getPathToFusionFileFromPrototypeName($prototypeName);
+		$componentDirectory = dirname($pathToFusionFile);
 
-		return sprintf('%sindex.css', dirname($pathToFusionFile));
+		$componentIdentifier = explode('/', $componentDirectory);
+		$componentIdentifier = array_pop($componentIdentifier);
+
+		return [
+			sprintf('%s/index.css', $componentDirectory),
+			sprintf('%s/Index.css', $componentDirectory),
+			sprintf('%s/component.css', $componentDirectory),
+			sprintf('%s/Component.css', $componentDirectory),
+			sprintf('%s/%s.css', $componentDirectory, lcfirst($componentIdentifier)),
+			sprintf('%s/%s.css', $componentDirectory, $componentIdentifier)
+		];
 	}
 
 	/**

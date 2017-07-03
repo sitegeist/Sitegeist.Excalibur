@@ -40,17 +40,17 @@ interface ComponentPathConventionInterface
 	 * Get the lookup path for component-related javascript files
 	 *
 	 * @param string $prototypeName
-	 * @return sring
+	 * @return array
 	 */
-	public function getJavaScriptLookupPathFromPrototypeName($prototypeName);
+	public function getJavaScriptLookupPathsFromPrototypeName($prototypeName);
 
 	/**
 	 * Get the lookup path for component-related css files
 	 *
 	 * @param string $prototypeName
-	 * @return sring
+	 * @return array
 	 */
-	public function getCssLookupPathFromPrototypeName($prototypeName);
+	public function getCssLookupPathsFromPrototypeName($prototypeName);
 
 	/**
 	 * Get any additional javascript files that should be loaded

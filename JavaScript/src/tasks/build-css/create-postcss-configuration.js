@@ -5,10 +5,10 @@ const createDefaultConfiguration = options => [
 	{'postcss-map': {maps: [options.cssMapValues]}}
 ];
 
-module.exports = async ({resolveLocalConfiguration, styleSettings, logger, error}) => {
+module.exports = async ({resolveLocalConfiguration, flowPackage, logger, error}) => {
 	const options = {
 		legacySupport: false,
-		cssMapValues: styleSettings
+		cssMapValues: flowPackage.styleSettings
 	};
 	const defaultConfiguration = createDefaultConfiguration(options);
 	const override = await resolveLocalConfiguration('build:css', {postcss: id => id}, 'object');

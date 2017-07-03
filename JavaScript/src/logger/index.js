@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 const pad = require('lodash.pad');
 const padStart = require('lodash.padstart');
-const {version} = require('../../package.json');
+const {version} = require('../../../package.json');
 
 const now = () => {
 	const date = new Date();
