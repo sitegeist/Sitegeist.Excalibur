@@ -9,7 +9,7 @@ const allowedComponentFiles = [
 ];
 
 const template = components => `
-require('sitegeist-excalibur/runtime')({
+require('sitegeist-excalibur/JavaScript/runtime')({
 ${components.map(component => `
 	'${component.identifier}': require('${component.path}')
 `)}

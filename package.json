@@ -6,7 +6,7 @@
     "lint": "xo"
   },
   "bin": {
-    "sitegeist-excalibur": "./index.js"
+    "sitegeist-excalibur": "./JavaScript/index.js"
   },
   "dependencies": {
     "autoprefixer": "^7.1.1",
