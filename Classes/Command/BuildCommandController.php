@@ -12,6 +12,7 @@ use Neos\Flow\Cli\CommandController;
 use Neos\Flow\Package\PackageManagerInterface;
 use Neos\Fusion\Core\Parser;
 use Neos\Utility\Files;
+use Sitegeist\Excalibur\Service\StyleSettingsService;
 
 class BuildCommandController extends CommandController
 {
@@ -26,6 +27,12 @@ class BuildCommandController extends CommandController
      * @var PackageManagerInterface
      */
     protected $packageManager;
+
+    /**
+     * @Flow\Inject
+     * @var StyleSettingsService
+     */
+    protected $styleSettingsService;
 
     /**
      * This is for build purposes only!
@@ -60,6 +67,23 @@ class BuildCommandController extends CommandController
         $this->outputLine(
             json_encode(
                 $lookupPaths
+            )
+        );
+    }
+
+    /**
+     * This is for build purposes only!
+     *
+     * @param string $sitePackageKey
+     * @return void
+     */
+    public function printStyleSettingsForSitePackageCommand($sitePackageKey)
+    {
+        $styleSettings = $this->styleSettingsService->getStyleSettingsForPackage($sitePackageKey);
+
+        $this->outputLine(
+            json_encode(
+                $styleSettings
             )
         );
     }
