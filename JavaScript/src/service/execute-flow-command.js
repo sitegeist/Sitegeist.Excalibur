@@ -6,7 +6,7 @@ const discoverLocalFile = require('./discover-local-file');
 module.exports = async (logger, error, command, options = {}) => {
 	const flowExecutable = await discoverLocalFile('flow');
 
-	if (!flowExecutable) {
+	if (!flowExecutable && error) {
 		error('Could not find Neos Flow executable.');
 	}
 
