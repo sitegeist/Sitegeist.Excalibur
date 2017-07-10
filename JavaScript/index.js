@@ -11,7 +11,7 @@ const {
 	hangInThere,
 	resolveLocalConfiguration,
 	resolvePackageInformation,
-	resolveStyleSettings
+	executeFlowCommand
 } = require('./src/service');
 
 const error = logger => message => {
@@ -72,6 +72,7 @@ const runner = async (paths, watch) => {
 					api.error = error(api.logger);
 					api.success = success(api.logger);
 					api.resolveLocalConfiguration = resolveLocalConfiguration;
+					api.executeFlowCommand = (...args) => executeFlowCommand(logger, error, ...args);
 					api.hangInThere = hangInThere(api);
 
 					return run(api);

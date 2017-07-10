@@ -63,6 +63,9 @@ class BuildCommandController extends CommandController
 
 			$result[$prototypeName] = [
 				'prototypeName' => $prototypeName,
+				'componentDirectory' => dirname($componentPathConvention->getPathToFusionFileFromPrototypeName(
+					$prototypeName
+				)),
 				'javascriptLookupPaths' => $componentPathConvention->getJavaScriptLookupPathsFromPrototypeName(
 					$prototypeName
 				),
