@@ -81,7 +81,6 @@ class BuildCommandController extends CommandController
     /**
      * This is for build purposes only!
      *
-     * @param string $sitePackageKey
      * @return void
      */
     public function printPackageInformationCommand()

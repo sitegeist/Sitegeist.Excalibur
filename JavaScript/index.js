@@ -48,7 +48,7 @@ const runner = async (paths, watch) => {
 		logger.info('(Tip: If you add another site package, you need to restart this watch task)');
 	}
 
-	const packageInformation = await resolvePackageInformation();
+	const packageInformation = await resolvePackageInformation(logger, error);
 
 	if (!packageInformation || !Object.keys(packageInformation).length) {
 		logger.warning('Looks like there are no site packages in your distribution. You should come back later ;)');
