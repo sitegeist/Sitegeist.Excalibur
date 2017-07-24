@@ -1,7 +1,8 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-const template = components => `
+const template = (rootFile, components) => `
+${rootFile ? `require('${rootFile}');` : ''}
 require('sitegeist-excalibur/JavaScript/runtime')({
 ${components.map(component => `
 	'${component.identifier}': require('${component.path}')
@@ -9,9 +10,9 @@ ${components.map(component => `
 });
 `.trim();
 
-const generateEntryFile = async (filePath, components) => {
+const generateEntryFile = async (filePath, rootFilePath, components) => {
 	await fs.ensureFile(filePath);
-	await fs.writeFile(filePath, template(components));
+	await fs.writeFile(filePath, template(rootFilePath, components));
 };
 
 const generateEntryFileForFlowPackage = async (flowPackage, tmpFile) => {
@@ -23,8 +24,9 @@ const generateEntryFileForFlowPackage = async (flowPackage, tmpFile) => {
 		}))
 	], [])
 	.filter(component => fs.pathExistsSync(component.path));
+	const rootFilePath = path.join(flowPackage.paths.package, 'excalibur.root.js');
 
-	await generateEntryFile(tmpFile, components);
+	await generateEntryFile(tmpFile, fs.pathExistsSync(rootFilePath) && rootFilePath, components);
 };
 
 module.exports = function (flowPackage, tmpFile) {
