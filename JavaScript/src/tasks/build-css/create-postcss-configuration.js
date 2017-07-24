@@ -5,9 +5,9 @@ const createDefaultConfiguration = options => [
 	{'postcss-map': {maps: [options.cssMapValues]}}
 ];
 
-module.exports = async ({resolveLocalConfiguration, flowPackage, logger, error}) => {
+module.exports = async ({resolveLocalConfiguration, argv, flowPackage, logger, error}) => {
 	const options = {
-		legacySupport: false,
+		legacySupport: argv.legacySupport,
 		cssMapValues: flowPackage.styleSettings
 	};
 	const defaultConfiguration = createDefaultConfiguration(options);
