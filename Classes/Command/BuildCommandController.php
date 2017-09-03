@@ -63,6 +63,7 @@ class BuildCommandController extends CommandController
 
 			$result[$prototypeName] = [
 				'prototypeName' => $prototypeName,
+				'rootPath' => $package->getResourcesPath() . $componentPathConvention->getComponentsDirectoryPath(),
 				'componentDirectory' => dirname($componentPathConvention->getPathToFusionFileFromPrototypeName(
 					$prototypeName
 				)),
@@ -95,8 +96,7 @@ class BuildCommandController extends CommandController
 				'packageKey' => $packageKey,
 				'paths' => [
 					'package' => $package->getPackagePath(),
-					'resources' => $package->getResourcesPath(),
-					'components' => $package->getResourcesPath() . $componentPathConvention->getComponentsDirectoryPath()
+					'resources' => $package->getResourcesPath()
 				],
 				'components' => $this->resolveAssetLookupPathsForPackage($package),
                 'styleSettings' => $this->styleSettingsService->getStyleSettingsForPackage($packageKey)

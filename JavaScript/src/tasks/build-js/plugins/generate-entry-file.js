@@ -20,10 +20,11 @@ const generateEntryFileForFlowPackage = async (flowPackage, tmpFile) => {
 		...paths,
 		...component.javascriptLookupPaths.map(lookupPath => ({
 			identifier: component.prototypeName,
-			path: path.join(flowPackage.paths.components, lookupPath)
+			path: path.join(component.rootPath, lookupPath)
 		}))
 	], [])
 	.filter(component => fs.pathExistsSync(component.path));
+
 	const rootFilePath = path.join(flowPackage.paths.package, 'excalibur.root.js');
 
 	await generateEntryFile(tmpFile, fs.pathExistsSync(rootFilePath) && rootFilePath, components);
