@@ -19,7 +19,7 @@ class DefaultComponentPathConvention implements ComponentPathConventionInterface
 	 */
 	public function getComponentsDirectoryPath()
 	{
-		return 'Private/Fusion/Component/';
+		return 'Private/Fusion/';
 	}
 
 	/**
@@ -33,10 +33,6 @@ class DefaultComponentPathConvention implements ComponentPathConventionInterface
 		list(,$componentSubPart) = explode(':', $prototypeName);
 
 		$pathToComponent = explode('.', $componentSubPart);
-
-		if ($pathToComponent[0] === 'Component') {
-			array_shift($pathToComponent);
-		}
 		$pathToComponent = implode('/', $pathToComponent);
 
 		return sprintf('%s/index.fusion', $pathToComponent);
@@ -51,8 +47,7 @@ class DefaultComponentPathConvention implements ComponentPathConventionInterface
 	 */
 	public function getPrototypeNameFromPathToFusionFile($packageKey, $pathToFusionFile)
 	{
-		$componentSubPart = explode('/', $componentSubPart);
-		array_pop($componentSubPart);
+		$componentSubPart = explode('/', $pathToFusionFile);
 		$componentSubPart = implode('.', $componentSubPart);
 
 		return sprintf('%s:%s', $packageKey, $componentSubPart);
