@@ -28,16 +28,16 @@ module.exports = TaskClass => {
 			};
 
 			this.instance.success = () => {
-				console.log('TODO: Implement success');
+				console.log('TODO: Implement success', {task: this.instance.id});
 			};
 
 			this.instance.error = () => {
-				console.log('TODO: Implement error');
+				console.log('TODO: Implement error', {task: this.instance.id});
 			};
 
 			this.instance.continue = () => {
 				if (this.isWatchMode) {
-					console.log('TODO: Implement continue');
+					console.log('TODO: Implement continue', {task: this.instance.id});
 				}
 			};
 
