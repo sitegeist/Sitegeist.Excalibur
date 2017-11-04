@@ -4,7 +4,6 @@ const glob = require('glob');
 const chokidar = require('chokidar');
 const postcss = require('postcss');
 const CleanCss = require('clean-css');
-const debounce = require('lodash.debounce');
 const {$add, $set} = require('plow-js');
 
 module.exports = class {
@@ -69,9 +68,9 @@ module.exports = class {
 	}
 
 	async watch() {
-		const run = debounce(() => this.run(), 500);
+		const run = () => this.run();
 
-		chokidar.watch(this.configuration.cssFilePattern)
+		chokidar.watch(this.configuration.cssFilePattern, {ignoreInitial: true})
 			.on('ready', run)
 			.on('add', run)
 			.on('change', run)
