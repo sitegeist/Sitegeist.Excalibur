@@ -82,7 +82,7 @@ module.exports = pathToPackage => {
 			this.paths.root = pathToPackage;
 			this.paths.privateResources = path.join(this.paths.root, 'Resources/Private');
 			this.paths.publicResources = path.join(this.paths.root, 'Resources/Public');
-			this.paths.temporary = path.join(rootPath, 'Data/Temporary', await this.packageKey);
+			this.paths.temporary = path.join(rootPath, 'Data/Temporary/Sitegeist.Excalibur', await this.packageKey);
 		}
 
 		get composerName() {
