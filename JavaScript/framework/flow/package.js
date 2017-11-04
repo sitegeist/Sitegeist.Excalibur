@@ -2,14 +2,20 @@ const path = require('path');
 const fs = require('fs-extra');
 const s = require('string');
 const glob = require('glob');
+const yaml = require('js-yaml');
 
 module.exports = pathToPackage => {
 	const fileCache = {};
 	const fileAsJsonCache = {};
+	const fileAsYamlCache = {};
 	const componentNameCache = {};
 
-	const getFileContents = relativePathToFile => {
+	const getFileContents = async relativePathToFile => {
 		const absolutePathToFile = path.join(pathToPackage, relativePathToFile);
+
+		if (!(await fs.pathExists(absolutePathToFile))) {
+			return '';
+		}
 
 		return fs.readFile(absolutePathToFile);
 	};
@@ -30,6 +36,15 @@ module.exports = pathToPackage => {
 				}
 
 				return fileAsJsonCache[relativePathToFile];
+			};
+
+			this.getFileContentsAsYaml = async relativePathToFile => {
+				if (!fileAsYamlCache[relativePathToFile]) {
+					fileAsYamlCache[relativePathToFile] = await this.getFileContents(relativePathToFile)
+						.then(contents => yaml.safeLoad(contents));
+				}
+
+				return fileAsYamlCache[relativePathToFile];
 			};
 
 			this.getPrototypeNameFromFusionFilePath = async relativePathToFusionFile => {
@@ -100,6 +115,10 @@ module.exports = pathToPackage => {
 		get fusionFiles() {
 			return glob.sync(`${this.paths.privateResources}/Fusion/**/*.{fusion,ts2}`)
 				.map(p => s(p).chompLeft(this.paths.root).chompLeft('/').toString());
+		}
+
+		get settings() {
+			return this.getFileContentsAsYaml('excalibur.styles.yaml');
 		}
 	};
 
