@@ -18,8 +18,14 @@ const now = () => {
 const create = scope => {
 	const logger = {};
 
-	logger.message = (symbol, message, color = chalk.white) =>
-		console.log(`[${symbol}][${pad(scope.substring(0, 11), 11)}]${chalk.white(`[${now()}]`)} ${color(message)}`);
+	logger.message = (symbol, message, color = chalk.white) => {
+		const lines = message.match(/.{1,73}/g);
+		console.log(`[${symbol}][${pad(scope.substring(0, 11), 11)}]${chalk.white(`[${now()}]`)} ${color(lines[0])}`);
+
+		lines.slice(1).forEach(line => {
+			console.log(`${pad('', 46)} ${line}`);
+		});
+	};
 
 	logger.info = message => logger.message('⏵', message);
 	logger.success = message => logger.message('✓', message, chalk.green);

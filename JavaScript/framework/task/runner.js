@@ -9,6 +9,19 @@ module.exports.singleton = () => {
 				await Promise.all(this.tasks.map(task => task.configure(flowPackage, manifest)));
 				await Promise.all(this.tasks.filter(task => !this.isWatchMode || task.isWatchable).map(task => task[method]()));
 			};
+
+			this.finishedTasks = 0;
+			this.finalize = (exitCode = 0) => {
+				if (exitCode !== 0) {
+					process.exit(exitCode);
+				} else if (!this.isWatchMode) {
+					if (this.finishedTasks === this.tasks.length) {
+						process.exit(0);
+					}
+
+					this.finishedTasks++;
+				}
+			};
 		}
 
 		async initializeObject() {
@@ -20,7 +33,7 @@ module.exports.singleton = () => {
 
 			this.isWatchMode = npmLifeCycleEvent.startsWith('watch:');
 			this.tasks = await Promise.all(paths.map(require).map(TaskClass => {
-				return this.objectManager.get('task/task', TaskClass);
+				return this.objectManager.get('task/task', TaskClass, this);
 			}));
 		}
 	};

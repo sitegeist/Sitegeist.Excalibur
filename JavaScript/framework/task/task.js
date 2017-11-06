@@ -1,4 +1,4 @@
-module.exports = TaskClass => {
+module.exports = (TaskClass, runner) => {
 	const Task = class {
 		constructor() {
 			this.configure = (...args) => this.instance.configure(...args);
@@ -14,10 +14,11 @@ module.exports = TaskClass => {
 			};
 		}
 
-		initializeObject() {
+		async initializeObject() {
 			this.isWatchMode = false;
 			this.instance = new TaskClass();
 			this.instance.objectManager = this.objectManager;
+			this.instance.logger = await (await this.objectManager.get('logger')).createInstance(this.instance.id);
 
 			this.instance.formatErrors = errors => {
 				console.log('TODO: Implement formatErrors', {errors});
@@ -28,17 +29,13 @@ module.exports = TaskClass => {
 			};
 
 			this.instance.success = () => {
-				console.log('TODO: Implement success', {task: this.instance.id});
+				this.instance.logger.success(`${this.instance.label} successfully completed :)`);
+				runner.finalize();
 			};
 
 			this.instance.error = () => {
-				console.log('TODO: Implement error', {task: this.instance.id});
-			};
-
-			this.instance.continue = () => {
-				if (this.isWatchMode) {
-					console.log('TODO: Implement continue', {task: this.instance.id});
-				}
+				this.instance.logger.error(`${this.instance.label} failed :(`);
+				runner.finalize(1);
 			};
 
 			if (this.instance.initializeObject) {

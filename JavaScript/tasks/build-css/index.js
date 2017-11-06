@@ -51,20 +51,25 @@ module.exports = class {
 
 	async run() {
 		try {
-			const entireCssString = glob.sync(this.configuration.cssFilePattern)
+			const cssFiles = glob.sync(this.configuration.cssFilePattern);
+
+			this.logger.debug(`Found ${cssFiles.length} CSS files.`, 1);
+
+			const entireCssString = cssFiles
 				.map(cssFile => fs.readFileSync(cssFile, 'utf8')).join('\n');
 			const result = await this.postcss.process(entireCssString);
 			const minifiedCssSource = new CleanCss({level: 2}).minify(result.css).styles;
+
+			this.logger.debug(`Write ${minifiedCssSource.length} Bytes to target CSS file.`, 1);
 
 			await fs.ensureFile(this.configuration.cssTargetFile);
 			await fs.writeFile(this.configuration.cssTargetFile, minifiedCssSource);
 		} catch (err) {
 			this.formatErrors([err]);
-			this.error();
+			return this.error();
 		}
 
-		this.success();
-		this.continue();
+		return this.success();
 	}
 
 	async watch() {

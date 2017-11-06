@@ -36,7 +36,6 @@
     "lodash.pad": "^4.5.1",
     "lodash.padstart": "^4.6.1",
     "looks-same": "^3.2.1",
-    "minimist": "^1.2.0",
     "open": "^0.0.5",
     "param-case": "^2.1.1",
     "plow-js": "^2.1.0",
@@ -47,7 +46,8 @@
     "prompt-promise": "^1.0.3",
     "simple-git": "^1.80.1",
     "string": "^3.3.3",
-    "webpack": "^2.5.1"
+    "webpack": "^2.5.1",
+    "yargs": "^10.0.3"
   },
   "devDependencies": {
     "eslint-plugin-jest": "^21.2.0",

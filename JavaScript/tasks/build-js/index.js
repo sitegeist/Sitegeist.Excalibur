@@ -24,16 +24,15 @@ module.exports = class {
 	constructor() {
 		this.build = (err, stats) => {
 			if (err) {
-				throw err;
+				this.formatErrors([err]);
 			} else if (stats.hasErrors()) {
 				this.formatErrors(stats.compilation.errors);
 				this.formatWarnings(stats.compilation.warnings);
 				this.error();
 			} else {
+				this.logger.debug(stats.toString(), 3);
 				this.success();
 			}
-
-			this.continue();
 		};
 
 		this.generateEntryFile = async () => {
@@ -52,9 +51,18 @@ module.exports = class {
 				}
 			}))).filter(i => i);
 
+			this.logger.debug(`Found ${Object.values(javascriptComponentMap).length} JavaScript components.`, 1);
+
 			await fs.ensureFile(this.entryFileName);
 			await fs.writeFile(this.entryFileName, entryFileTemplate(javascriptComponentMap));
+
+			this.logger.debug(`Generated entry file at ${this.entryFileName.replace(this.rootPath, '.')}`, 3);
 		};
+	}
+
+	async initializeObject() {
+		const context = await this.objectManager.get('context');
+		this.rootPath = context.rootPath;
 	}
 
 	async configure(flowPackage, manifest) {
