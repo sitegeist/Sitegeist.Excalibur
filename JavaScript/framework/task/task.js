@@ -3,10 +3,16 @@ module.exports = (TaskClass, runner) => {
 		constructor() {
 			this.configure = (...args) => this.instance.configure(...args);
 			this.run = (...args) => {
+				if (process.env.NODE_ENV !== 'production') {
+					this.hangInThere.start();
+				}
 				return this.instance.run(...args);
 			};
 			this.watch = (...args) => {
 				if (this.isWatchable) {
+					if (process.env.NODE_ENV !== 'production') {
+						this.hangInThere.start();
+					}
 					return this.instance.watch(...args);
 				}
 			};
@@ -14,6 +20,7 @@ module.exports = (TaskClass, runner) => {
 
 		async initializeObject() {
 			this.errorHandler = await this.objectManager.get('task/errorHandler');
+			this.hangInThere = await this.objectManager.get('logger/hangInThere');
 
 			this.instance = new TaskClass();
 			this.instance.objectManager = this.objectManager;
@@ -30,11 +37,13 @@ module.exports = (TaskClass, runner) => {
 
 			this.instance.success = () => {
 				this.instance.logger.success(`${this.instance.label} successfully completed :)`);
+				this.hangInThere.stop();
 				runner.finalize();
 			};
 
 			this.instance.error = () => {
 				this.instance.logger.error(`${this.instance.label} failed :(`);
+				this.hangInThere.stop();
 				runner.finalize(1);
 			};
 

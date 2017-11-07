@@ -19,13 +19,7 @@ module.exports = () => {
 		constructor(scope = 'excalibur') {
 			this.scope = scope;
 			this.message = (symbol, message, color = chalk.white) => {
-				if (message.length > 73) {
-					console.log(`[${symbol}][${pad(scope.substring(0, 20), 20)}]${chalk.white(`[${now()}]`)}`);
-					console.log(color(message));
-					console.log();
-				} else {
-					console.log(`[${symbol}][${pad(scope.substring(0, 20), 20)}]${chalk.white(`[${now()}]`)} ${color(message)}`);
-				}
+				console.log(`[${symbol}][${pad(scope.substring(0, 20), 20)}]${chalk.white(`[${now()}]`)} ${color(message)}`);
 			};
 
 			this.info = message => this.message('⏵', message);
