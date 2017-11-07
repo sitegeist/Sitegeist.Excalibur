@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 const chalk = require('chalk');
+const glob = require('glob');
+const path = require('path');
 const pad = require('lodash.pad');
 
 const {version} = require('../package.json');
@@ -30,6 +32,9 @@ console.log('');
 
 const app = async () => {
 	try {
+		//
+		// Initialize object manager
+		//
 		const objectManager = await createObjectManager({
 			rootPath: process.cwd(),
 			appPath: __dirname,
@@ -38,6 +43,14 @@ const app = async () => {
 			packageJson,
 			npmLifeCycleEvent: process.env.npm_lifecycle_event
 		});
+		//
+		// Initialize error handler
+		//
+		const errorMatchers = glob.sync(path.join(__dirname, 'errors/**/*.js')).map(require)
+			.map(ErrorMatcherClass => new ErrorMatcherClass());
+
+		await objectManager.get('task/errorHandler', errorMatchers);
+
 		const packageManager = await objectManager.get('flow/packageManager');
 		const taskRunner = await objectManager.get('task/runner');
 		const manifest = await objectManager.get('manifest');
