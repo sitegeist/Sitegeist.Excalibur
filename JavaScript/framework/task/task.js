@@ -19,7 +19,7 @@ module.exports = (TaskClass, runner) => {
 		}
 
 		async initializeObject() {
-			this.errorHandler = await this.objectManager.get('task/errorHandler');
+			this.printErrors = await this.objectManager.get('task/printErrors');
 			this.hangInThere = await this.objectManager.get('logger/hangInThere');
 
 			this.instance = new TaskClass();
@@ -28,7 +28,7 @@ module.exports = (TaskClass, runner) => {
 
 			this.instance.formatErrors = errors => {
 				this.instance.logger.error(`Found ${errors.length} error(s) during "${this.instance.label}"`);
-				this.errorHandler.handleErrors(errors, this.instance.logger);
+				this.printErrors.print(errors, this.instance.logger);
 			};
 
 			this.instance.formatWarnings = warnings => {

@@ -1,14 +1,14 @@
-module.exports.singleton = (errorMatchers = []) => {
-	const Runner = class {
-		handleErrors(errors, logger) {
+module.exports.singleton = (errorHandlers = []) => {
+	const PrintErrors = class {
+		print(errors, logger) {
 			errors.forEach((error, index) => {
-				const [errorMatcher] = errorMatchers.filter(errorMatcher => errorMatcher.matches(error));
+				const [errorHandler] = errorHandlers.filter(errorHandler => errorHandler.matches(error));
 
 				console.log();
 				logger.error(`Error #${index + 1}`);
 
-				if (errorMatcher) {
-					const lines = errorMatcher.print(error).split('\n').filter(l => l.trim());
+				if (errorHandler) {
+					const lines = errorHandler.print(error).split('\n').filter(l => l.trim());
 					const offset = lines[0].length - lines[0].trim().trimLeft().length;
 
 					console.log();
@@ -26,5 +26,5 @@ module.exports.singleton = (errorMatchers = []) => {
 		}
 	};
 
-	return new Runner();
+	return new PrintErrors();
 };

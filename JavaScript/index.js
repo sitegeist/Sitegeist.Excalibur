@@ -5,7 +5,6 @@ const path = require('path');
 const pad = require('lodash.pad');
 
 const {version} = require('../package.json');
-const logger = require('./src/logger');
 const packageJson = require(process.cwd() + '/package.json');
 const createObjectManager = require('./framework');
 
@@ -38,7 +37,6 @@ const app = async () => {
 		const objectManager = await createObjectManager({
 			rootPath: process.cwd(),
 			appPath: __dirname,
-			logger,
 			argv,
 			packageJson,
 			npmLifeCycleEvent: process.env.npm_lifecycle_event
@@ -46,10 +44,10 @@ const app = async () => {
 		//
 		// Initialize error handler
 		//
-		const errorMatchers = glob.sync(path.join(__dirname, 'errors/**/*.js')).map(require)
-			.map(ErrorMatcherClass => new ErrorMatcherClass());
+		const handlers = glob.sync(path.join(__dirname, 'handlers/**/*.js')).map(require)
+			.map(HandlerClass => new HandlerClass());
 
-		await objectManager.get('task/errorHandler', errorMatchers);
+		await objectManager.get('task/printErrors', handlers);
 
 		const packageManager = await objectManager.get('flow/packageManager');
 		const taskRunner = await objectManager.get('task/runner');

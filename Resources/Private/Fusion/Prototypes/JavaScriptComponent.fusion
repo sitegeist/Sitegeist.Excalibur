@@ -1,5 +1,0 @@
-prototype(Sitegeist.Excalibur:JavaScriptComponent) < prototype(PackageFactory.AtomicFusion:Component) {
-    renderer.@process.javaScriptComponentWrapping = Sitegeist.Excalibur:JavaScriptComponentWrapping {
-        @position = 'end 9999'
-    }
-}
