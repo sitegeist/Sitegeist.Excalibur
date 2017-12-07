@@ -1,7 +1,15 @@
-module.exports = (TaskClass, runner, flowPackage, manifest) => {
+module.exports = (TaskClass, runner, flowPackage, manifests) => {
 	const Task = class {
 		constructor() {
-			this.configure = (...args) => this.instance.configure(...args);
+			this.configure = async (...args) => {
+				await this.instance.configure(...args);
+
+				this.instance.configuration = await manifests.reduce(async (configuration, manifest) => {
+					return manifest.customize(this.instance.id, await configuration, {
+						flowPackage
+					});
+				}, Promise.resolve(this.instance.configuration));
+			};
 			this.prepare = (...args) => {
 				if (this.instance.prepare) {
 					return this.instance.prepare(...args);
@@ -11,6 +19,10 @@ module.exports = (TaskClass, runner, flowPackage, manifest) => {
 				if (process.env.NODE_ENV !== 'production') {
 					this.hangInThere.start();
 				}
+
+				this.instance.logger
+					.debug(`Using configuration: ${JSON.stringify(this.instance.configuration, null, 4)}`, 3);
+
 				return this.instance.run(...args);
 			};
 			this.watch = (...args) => {
@@ -30,7 +42,6 @@ module.exports = (TaskClass, runner, flowPackage, manifest) => {
 			this.instance = new TaskClass();
 
 			this.instance.flowPackage = flowPackage;
-			this.instance.manifest = manifest;
 			this.instance.objectManager = this.objectManager;
 			this.instance.logger = await (await this.objectManager.get('logger')).createInstance(this.instance.id);
 
@@ -56,6 +67,9 @@ module.exports = (TaskClass, runner, flowPackage, manifest) => {
 				this.hangInThere.stop();
 				return 1;
 			};
+
+			this.instance.isFileIgnored = pathToFile => manifests
+				.some(manifest => manifest.ignores(pathToFile));
 
 			if (this.instance.initializeObject) {
 				this.instance.initializeObject();

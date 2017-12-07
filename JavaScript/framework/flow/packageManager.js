@@ -29,7 +29,6 @@ module.exports.singleton = async () => {
 		}
 
 		async initializeObject() {
-			const manifest = await this.objectManager.get('manifest');
 			const unassertedBaseDirectory = (await this.objectManager.get('context')).rootPath;
 			const baseDirectory = await assertPathExists(unassertedBaseDirectory);
 			const gitInstance = git(baseDirectory);
@@ -47,7 +46,6 @@ module.exports.singleton = async () => {
 					const pathToPackage = await fs.realpath(path.join(packageTypeDirectory, packageKey));
 					const pathToComposerJson = path.join(pathToPackage, 'composer.json');
 					const packageIsIncluded = (
-						manifest.isPackageIncluded(packageKey) &&
 						(await fs.pathExists(pathToComposerJson)) &&
 						!(await gitInstance.checkIgnore(pathToComposerJson)).length
 					);

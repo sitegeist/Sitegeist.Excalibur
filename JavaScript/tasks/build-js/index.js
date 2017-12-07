@@ -35,17 +35,19 @@ module.exports = class {
 		};
 
 		this.generateEntryFile = async () => {
-			const fusionFiles = await this.flowPackage.fusionFiles;
+			const fusionFiles = (await this.flowPackage.fusionFiles)
+				.filter(f => !this.isFileIgnored(path.join(this.flowPackage.paths.root, f)));
 			const javascriptComponentMap = (await Promise.all(fusionFiles.map(async fusionFile => {
 				const [prototypeName, javascriptFile] = await Promise.all([
 					await this.flowPackage.getPrototypeNameFromFusionFilePath(fusionFile),
 					await this.flowPackage.getJavaScriptFileNameFromFusionFilePath(fusionFile)
 				]);
+				const javascriptFileName = path.join(this.flowPackage.paths.root, javascriptFile);
 
-				if (await fs.pathExists(path.join(this.flowPackage.paths.root, javascriptFile))) {
+				if (await fs.pathExists(javascriptFileName) && !this.isFileIgnored(javascriptFileName)) {
 					return {
 						prototypeName,
-						javascriptFile: path.join(this.flowPackage.paths.root, javascriptFile)
+						javascriptFile: javascriptFileName
 					};
 				}
 			}))).filter(i => i);

@@ -80,14 +80,6 @@ module.exports = pathToPackage => {
 			this.createTemporaryFileName = fileName => {
 				return path.join(this.paths.temporary, fileName);
 			};
-
-			this.customize = async (configuration, scope) => {
-				console.log('TODO: Apply package customization.', {
-					scope
-				});
-
-				return configuration;
-			};
 		}
 
 		async initializeObject() {
@@ -119,10 +111,6 @@ module.exports = pathToPackage => {
 
 		get settings() {
 			return this.getFileContentsAsYaml('excalibur.styles.yaml');
-		}
-
-		get pathsToCustomizationFiles() {
-			return glob.sync(path.join(pathToPackage, 'excalibur*.js'));
 		}
 	};
 

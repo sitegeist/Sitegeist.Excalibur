@@ -1,35 +1,19 @@
 const path = require('path');
 const glob = require('glob');
 
-module.exports.singleton = () => {
+module.exports = flowPackage => {
 	const Runner = class {
 		constructor() {
-			this.run = async (flowPackage, manifest) => {
+			this.run = async () => {
 				const method = this.isWatchMode ? 'watch' : 'run';
 				const tasks = await Promise.all(this.paths.map(require).map(async TaskClass => {
-					const task = await this.objectManager.get('task/task', TaskClass, this, flowPackage, manifest);
-					const customizeConfiguration = async scope => {
-						const {id, configuration} = task.instance;
-						const customizer = await this.objectManager.get('task/customizer', {
-							id,
-							scope,
-							configuration,
-							flowPackage,
-							manifest
-						});
-
-						task.instance.configuration = await customizer.run();
-					};
+					const task = await this.objectManager.get('task/task', TaskClass, this, flowPackage, [
+						this.packageManifest,
+						this.distributionManifest,
+						this.excaliburManifest
+					]);
 
 					await task.configure();
-					await customizeConfiguration(flowPackage);
-					await customizeConfiguration(manifest);
-					await customizeConfiguration(this);
-
-					const {logger, configuration} = task.instance;
-
-					logger.debug(`Using configuration: ${JSON.stringify(configuration, null, 4)}`, 3);
-
 					await task.prepare();
 
 					return task;
@@ -43,7 +27,7 @@ module.exports.singleton = () => {
 		}
 
 		async initializeObject() {
-			const {npmLifeCycleEvent, packageJson, appPath} = await this.objectManager.get('context');
+			const {npmLifeCycleEvent, packageJson, appPath, rootPath} = await this.objectManager.get('context');
 			const taskPathName = npmLifeCycleEvent.replace(/^watch:/, '').replace(/:/g, '-');
 			const modulePattern = path.join(appPath, 'tasks', taskPathName + '*');
 
@@ -51,10 +35,10 @@ module.exports.singleton = () => {
 				.filter(path => packageJson.scripts[path.split('/').slice(-1)[0].replace(/-/g, ':')]);
 
 			this.isWatchMode = npmLifeCycleEvent.startsWith('watch:');
-		}
 
-		get pathsToCustomizationFiles() {
-			return glob.sync(path.join(__dirname, '../../modifier/**/*.js'));
+			this.packageManifest = await this.objectManager.get('manifest', flowPackage.paths.root);
+			this.distributionManifest = await this.objectManager.get('manifest', rootPath);
+			this.excaliburManifest = await this.objectManager.get('manifest', appPath, 'modifier/**/*.js');
 		}
 	};
 

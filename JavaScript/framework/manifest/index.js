@@ -1,46 +1,42 @@
 const path = require('path');
 const glob = require('glob');
-const yaml = require('js-yaml');
 const fs = require('fs-extra');
+const minimatch = require('minimatch');
 
-module.exports.singleton = () => {
-	let pathToManifestFile;
-	let manifestConfiguration = null;
-
-	const readManifestFile = path => {
-		if (!manifestConfiguration) {
-			if (!fs.pathExistsSync(pathToManifestFile)) {
-				return;
-			}
-			const yamlString = fs.readFileSync(pathToManifestFile, 'utf8');
-			manifestConfiguration = yaml.safeLoad(yamlString);
-		}
-
-		return path.split('.').reduce((subConfiguration, pathSegment) => {
-			if (subConfiguration) {
-				return subConfiguration[pathSegment];
-			}
-
-			return null;
-		}, manifestConfiguration);
-	};
-
+module.exports = (rootPath, ignoreFileName = '.excaliburignore', customizerFilePattern = 'excalibur*.js') => {
 	const Manifest = class {
-		constructor() {
-			this.isPackageIncluded = packageKey => !(readManifestFile('ignoredPackages') || [])
-				.includes(packageKey);
-		}
-
 		async initializeObject() {
-			const context = await this.objectManager.get('context');
+			this.ignoreFilePatterns = [];
 
-			pathToManifestFile = path.join(context.rootPath, 'excalibur.yaml');
+			if (await fs.pathExists(path.join(rootPath, ignoreFileName))) {
+				this.ignoreFilePatterns = (await fs.readFile(path.join(rootPath, ignoreFileName), 'utf8'))
+					.split('\n')
+					.slice(0, -1)
+					.map(pattern => path.join(rootPath, pattern));
+			}
 		}
 
-		get pathsToCustomizationFiles() {
-			return this.objectManager.get('context').then(context => {
-				return glob.sync(path.join(context.rootPath, 'excalibur*.js'));
-			});
+		ignores(pathToFile) {
+			return this.ignoreFilePatterns.some(ignoreFilePattern => minimatch(pathToFile, ignoreFilePattern));
+		}
+
+		customize(id, value, dependencies = {}) {
+			const CustomizerClasses = glob.sync(path.join(rootPath, customizerFilePattern)).map(require);
+			const customizers = CustomizerClasses.map(CustomizerClass => new CustomizerClass());
+
+			return customizers.reduce(
+				async (value, customizer) => {
+					customizer.logger = await (await this.objectManager.get('logger')).createInstance(id);
+
+					Object.keys(dependencies).forEach(dependency => {
+						customizer[dependency] = dependencies[dependency];
+					});
+
+					return customizer[id] && customizer.condition !== false ?
+						customizer[id](await value) : value;
+				},
+				Promise.resolve(value)
+			);
 		}
 	};
 

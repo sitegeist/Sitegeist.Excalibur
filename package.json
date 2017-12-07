@@ -38,6 +38,7 @@
     "lodash.pad": "^4.5.1",
     "lodash.padstart": "^4.6.1",
     "looks-same": "^3.2.1",
+    "minimatch": "^3.0.4",
     "object-fit-images": "^3.2.3",
     "open": "^0.0.5",
     "param-case": "^2.1.1",

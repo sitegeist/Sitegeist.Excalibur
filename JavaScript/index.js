@@ -51,17 +51,16 @@ const app = async () => {
 		await objectManager.get('task/printErrors', handlers);
 
 		//
-		// Initialize package manager, task runner and distribution manifest
+		// Initialize package manager
 		//
 		const packageManager = await objectManager.get('flow/packageManager');
-		const taskRunner = await objectManager.get('task/runner');
-		const manifest = await objectManager.get('manifest');
 
 		//
 		// Run tasks
 		//
-		const results = await Promise.all(packageManager.map(flowPackage => {
-			return taskRunner.run(flowPackage, manifest);
+		const results = await Promise.all(packageManager.map(async flowPackage => {
+			const taskRunner = await objectManager.get('task/runner', flowPackage);
+			return taskRunner.run();
 		}));
 
 		//
