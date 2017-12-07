@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const webpack = require('webpack');
 const chokidar = require('chokidar');
-const {$all, $set, $add} = require('plow-js');
 
 const entryFileTemplate = components => `
 require('sitegeist-excalibur/JavaScript/runtime')({
@@ -22,16 +21,16 @@ module.exports = class {
 	}
 
 	constructor() {
-		this.build = (err, stats) => {
+		this.createBuildFunction = resolve => (err, stats) => {
 			if (err) {
 				this.formatErrors([err]);
 			} else if (stats.hasErrors()) {
 				this.formatErrors(stats.compilation.errors);
 				this.formatWarnings(stats.compilation.warnings);
-				this.error();
+				resolve(this.error());
 			} else {
 				this.logger.debug(stats.toString(), 3);
-				this.success();
+				resolve(this.success());
 			}
 		};
 
@@ -51,12 +50,12 @@ module.exports = class {
 				}
 			}))).filter(i => i);
 
-			this.logger.debug(`Found ${Object.values(javascriptComponentMap).length} JavaScript components.`, 1);
+			this.logger.debug(`Found ${Object.values(javascriptComponentMap).length} JavaScript component(s).`, 1);
 
-			await fs.ensureFile(this.entryFileName);
-			await fs.writeFile(this.entryFileName, entryFileTemplate(javascriptComponentMap));
+			await fs.ensureFile(this.configuration.entryFileName);
+			await fs.writeFile(this.configuration.entryFileName, entryFileTemplate(javascriptComponentMap));
 
-			this.logger.debug(`Generated entry file at ${this.entryFileName.replace(this.rootPath, '.')}`, 3);
+			this.logger.debug(`Generated entry file at ${this.configuration.entryFileName.replace(this.rootPath, '.')}`, 3);
 		};
 	}
 
@@ -65,38 +64,32 @@ module.exports = class {
 		this.rootPath = context.rootPath;
 	}
 
-	async configure(flowPackage, manifest) {
-		const webpackConfiguration = await this.objectManager.get('configuration', $all(
-			$set('entry', {}),
-			$set('output', {}),
-			$set('plugins', []),
-			$set('module.rules', []),
-			{}
-		));
-		const entryFileName = await flowPackage.createTemporaryFileName('entry.js');
+	async configure() {
+		this.configuration.entryFileName = await this.flowPackage.createTemporaryFileName('entry.js');
+		this.configuration.entryFileRegenerationWatchPattern = path.join(this.flowPackage.paths.privateResources, 'Fusion/**/*.js');
 
-		webpackConfiguration.append('excalibur/entry', $set('entry', {
-			main: [entryFileName]
-		}));
+		this.configuration.webpack = {
+			entry: {
+				main: [this.configuration.entryFileName]
+			},
+			output: {
+				filename: '[name].js',
+				path: path.join(await this.flowPackage.paths.publicResources, 'JavaScript')
+			},
+			module: {
+				rules: [
+					{
+						test: /\.js$/,
+						use: 'babel-loader'
+					}
+				]
+			}
+		};
+	}
 
-		webpackConfiguration.append('excalibur/output', $set('output', {
-			filename: '[name].js',
-			path: path.join(await flowPackage.paths.publicResources, 'JavaScript')
-		}));
-
-		webpackConfiguration.append('excalibur/babel-loader', $add('module.rules', {
-			test: /\.js$/,
-			use: 'babel-loader'
-		}));
-
-		await manifest.customize(webpackConfiguration, 'build:js:webpack');
-		await flowPackage.customize(webpackConfiguration, 'build:js:webpack');
-
-		this.compiler = webpack(webpackConfiguration.configuration);
-		this.packageKey = await flowPackage.packageKey;
-		this.javascriptFilePattern = path.join(flowPackage.paths.privateResources, 'Fusion/**/*.js');
-		this.entryFileName = entryFileName;
-		this.flowPackage = flowPackage;
+	async prepare() {
+		this.compiler = webpack(this.configuration.webpack);
+		this.packageKey = await this.flowPackage.packageKey;
 	}
 
 	async run() {
@@ -108,7 +101,10 @@ module.exports = class {
 		//
 		// Run the webpack build
 		//
-		this.compiler.run(this.build);
+
+		return new Promise(resolve => {
+			this.compiler.run(this.createBuildFunction(resolve));
+		});
 	}
 
 	async watch() {
@@ -129,17 +125,17 @@ module.exports = class {
 		});
 
 		//
-		// Generate the entry file and listen for changes to regenerate the entry file, whenever a JavaScript file
+		// Generate the entry file and listen for changes to regenerate the entry file, whenever a relevant file
 		// is added or removed
 		//
 		await this.generateEntryFile();
-		chokidar.watch(this.javascriptFilePattern, {ignoreInitial: true})
+		chokidar.watch(this.configuration.entryFileRegenerationWatchPattern, {ignoreInitial: true})
 			.on('add', () => this.generateEntryFile())
 			.on('unlink', () => this.generateEntryFile());
 
 		//
 		// Run the webpack watcher
 		//
-		this.compiler.watch({}, this.build);
+		this.compiler.watch({}, this.createBuildFunction(() => {}));
 	}
 };

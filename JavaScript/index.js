@@ -41,6 +41,7 @@ const app = async () => {
 			packageJson,
 			npmLifeCycleEvent: process.env.npm_lifecycle_event
 		});
+
 		//
 		// Initialize error handler
 		//
@@ -49,13 +50,24 @@ const app = async () => {
 
 		await objectManager.get('task/printErrors', handlers);
 
+		//
+		// Initialize package manager, task runner and distribution manifest
+		//
 		const packageManager = await objectManager.get('flow/packageManager');
 		const taskRunner = await objectManager.get('task/runner');
 		const manifest = await objectManager.get('manifest');
 
-		await Promise.all(packageManager.map(flowPackage => {
+		//
+		// Run tasks
+		//
+		const results = await Promise.all(packageManager.map(flowPackage => {
 			return taskRunner.run(flowPackage, manifest);
 		}));
+
+		//
+		// Calculate final exit code from task results
+		//
+		process.exit([].concat(...results).some(r => r) ? 1 : 0);
 	} catch (err) {
 		console.error(err);
 	}

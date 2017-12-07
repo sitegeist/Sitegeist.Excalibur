@@ -120,6 +120,15 @@ module.exports = pathToPackage => {
 		get settings() {
 			return this.getFileContentsAsYaml('excalibur.styles.yaml');
 		}
+
+		get pathToCustomizationFile() {
+			const maybePathToCustomizationFile = path.join(pathToPackage, 'excalibur.js');
+			return fs.pathExists(maybePathToCustomizationFile).then(pathExists => {
+				if (pathExists) {
+					return maybePathToCustomizationFile;
+				}
+			});
+		}
 	};
 
 	return new Package();

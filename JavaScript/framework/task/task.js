@@ -1,7 +1,12 @@
-module.exports = (TaskClass, runner) => {
+module.exports = (TaskClass, runner, flowPackage, manifest) => {
 	const Task = class {
 		constructor() {
 			this.configure = (...args) => this.instance.configure(...args);
+			this.prepare = (...args) => {
+				if (this.instance.prepare) {
+					return this.instance.prepare(...args);
+				}
+			};
 			this.run = (...args) => {
 				if (process.env.NODE_ENV !== 'production') {
 					this.hangInThere.start();
@@ -23,8 +28,13 @@ module.exports = (TaskClass, runner) => {
 			this.hangInThere = await this.objectManager.get('logger/hangInThere');
 
 			this.instance = new TaskClass();
+
+			this.instance.flowPackage = flowPackage;
+			this.instance.manifest = manifest;
 			this.instance.objectManager = this.objectManager;
 			this.instance.logger = await (await this.objectManager.get('logger')).createInstance(this.instance.id);
+
+			this.instance.configuration = {};
 
 			this.instance.formatErrors = errors => {
 				this.instance.logger.error(`Found ${errors.length} error(s) during "${this.instance.label}"`);
@@ -38,13 +48,13 @@ module.exports = (TaskClass, runner) => {
 			this.instance.success = () => {
 				this.instance.logger.success(`${this.instance.label} successfully completed :)`);
 				this.hangInThere.stop();
-				runner.finalize();
+				return 0;
 			};
 
 			this.instance.error = () => {
 				this.instance.logger.error(`${this.instance.label} failed :(`);
 				this.hangInThere.stop();
-				runner.finalize(1);
+				return 1;
 			};
 
 			if (this.instance.initializeObject) {
