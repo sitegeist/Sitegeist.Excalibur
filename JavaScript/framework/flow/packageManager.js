@@ -12,7 +12,7 @@ const assertPathExists = async (basePath, subPath = '') => {
 	return targetPath;
 };
 
-module.exports.singleton = async unassertedBaseDirectory => {
+module.exports.singleton = async () => {
 	const packages = [];
 
 	const PackageManager = class {
@@ -43,7 +43,9 @@ module.exports.singleton = async unassertedBaseDirectory => {
 					.filter(d => !['..', '.'].includes(d));
 
 				return Promise.all(packageKeys.map(async packageKey => {
-					const pathToComposerJson = path.join(packageTypeDirectory, packageKey, 'composer.json');
+					// Resolve path to package, also resolve symlinks
+					const pathToPackage = await fs.realpath(path.join(packageTypeDirectory, packageKey));
+					const pathToComposerJson = path.join(pathToPackage, 'composer.json');
 					const packageIsIncluded = (
 						manifest.isPackageIncluded(packageKey) &&
 						(await fs.pathExists(pathToComposerJson)) &&
