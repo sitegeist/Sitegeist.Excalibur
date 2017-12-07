@@ -2578,7 +2578,7 @@ ignore@^3.2.0, ignore@^3.2.6:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.0.tgz#3812d22cbe9125f2c2b4915755a1b8abd745a001"
 
-immutable@^3.7.6, immutable@^3.8.2:
+immutable@^3.8.2:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
 
@@ -3958,12 +3958,6 @@ pkg-up@^1.0.0:
   resolved "https://registry.yarnpkg.com/pkg-up/-/pkg-up-1.0.0.tgz#3e08fb461525c4421624a33b9f7e6d0af5b05a26"
   dependencies:
     find-up "^1.0.0"
-
-plow-js@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/plow-js/-/plow-js-2.1.0.tgz#11d696ad40b6ff7cca6fd8f3c071f46b42b9cf9d"
-  optionalDependencies:
-    immutable "^3.7.6"
 
 plur@^2.1.2:
   version "2.1.2"
