@@ -53,7 +53,7 @@ module.exports = class {
 
 			const entireCssString = cssFiles
 				.map(cssFile => fs.readFileSync(cssFile, 'utf8')).join('\n');
-			const result = await postcss(this.configuration.postcss).process(entireCssString);
+			const result = await postcss(this.configuration.postcss.plugins).process(entireCssString);
 			const minifiedCssSource = this.configuration.general.minify ?
 				new CleanCss(this.configuration.cleancss).minify(result.css).styles : result.css;
 

@@ -1,23 +1,37 @@
-const {$add, $unshift} = require('plow-js');
+const addOrUnshift = (subject, value) =>
+	Array.isArray(subject) ? [value, ...subject] : [value, subject];
 
 module.exports = class {
 	get condition() {
-		return this.browsers('IE <= 11, Edge <= 15');
+		return this.browsers.compare('IE <= 11, Edge <= 15');
 	}
 
-	apply() {
-		this.on('build:css:postcss', configuration => {
-			configuration.append(
-				'excalibur/object-fit-polyfill',
-				$add('plugins', require('postcss-object-fit-images'))
-			);
-		});
+	[`build:css`](configuration) {
+		this.logger.debug(`Add object-fit polyfill`, 1);
+		configuration.postcss.plugins.push(require('postcss-object-fit-images'));
 
-		this.on('build:js:webpack', configuration => {
-			configuration.append(
-				'excalibur/object-fit-polyfill',
-				$unshift('entry.main', 'sitegeist-excalibur/JavaScript/polyfills/object-fit')
+		return configuration;
+	}
+
+	[`build:js`](configuration) {
+		const polyfillPackageName = 'sitegeist-excalibur/JavaScript/polyfills/object-fit';
+
+		this.logger.debug(`Add object-fit polyfill`, 1);
+
+		if (configuration.webpack.entry.vendor) {
+			configuration.webpack.entry.vendor = addOrUnshift(
+				configuration.webpack.entry.vendor,
+				polyfillPackageName
 			);
-		});
+		} else {
+			Object.keys(configuration.webpack.entry).forEach(key => {
+				configuration.webpack.entry[key] = addOrUnshift(
+					configuration.webpack.entry[key],
+					polyfillPackageName
+				);
+			});
+		}
+
+		return configuration;
 	}
 };

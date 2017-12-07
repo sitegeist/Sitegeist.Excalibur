@@ -18,11 +18,18 @@ module.exports.singleton = () => {
 							manifest
 						});
 
-						task.configuration = await customizer.run();
+						task.instance.configuration = await customizer.run();
 					};
 
 					await task.configure();
-					await Promise.all([flowPackage, manifest].map(customizeConfiguration));
+					await customizeConfiguration(flowPackage);
+					await customizeConfiguration(manifest);
+					await customizeConfiguration(this);
+
+					const {logger, configuration} = task.instance;
+
+					logger.debug(`Using configuration: ${JSON.stringify(configuration, null, 4)}`, 3);
+
 					await task.prepare();
 
 					return task;
@@ -44,6 +51,10 @@ module.exports.singleton = () => {
 				.filter(path => packageJson.scripts[path.split('/').slice(-1)[0].replace(/-/g, ':')]);
 
 			this.isWatchMode = npmLifeCycleEvent.startsWith('watch:');
+		}
+
+		get pathsToCustomizationFiles() {
+			return glob.sync(path.join(__dirname, '../../modifier/**/*.js'));
 		}
 	};
 

@@ -1,7 +1,7 @@
 const path = require('path');
+const glob = require('glob');
 const yaml = require('js-yaml');
 const fs = require('fs-extra');
-const {$get} = require('plow-js');
 
 module.exports.singleton = () => {
 	let pathToManifestFile;
@@ -15,7 +15,14 @@ module.exports.singleton = () => {
 			const yamlString = fs.readFileSync(pathToManifestFile, 'utf8');
 			manifestConfiguration = yaml.safeLoad(yamlString);
 		}
-		return $get(path, manifestConfiguration);
+
+		return path.split('.').reduce((subConfiguration, pathSegment) => {
+			if (subConfiguration) {
+				return subConfiguration[pathSegment];
+			}
+
+			return null;
+		}, manifestConfiguration);
 	};
 
 	const Manifest = class {
@@ -30,15 +37,9 @@ module.exports.singleton = () => {
 			pathToManifestFile = path.join(context.rootPath, 'excalibur.yaml');
 		}
 
-		get pathToCustomizationFile() {
+		get pathsToCustomizationFiles() {
 			return this.objectManager.get('context').then(context => {
-				const maybePathToCustomizationFile = path.join(context.rootPath, 'excalibur.js');
-
-				return fs.pathExists(maybePathToCustomizationFile).then(pathExists => {
-					if (pathExists) {
-						return maybePathToCustomizationFile;
-					}
-				});
+				return glob.sync(path.join(context.rootPath, 'excalibur*.js'));
 			});
 		}
 	};

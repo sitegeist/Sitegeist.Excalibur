@@ -1,26 +1,35 @@
 module.exports = ({scope, id, configuration, flowPackage, manifest}) => {
 	const Customizer = class {
 		constructor() {
-			this.run = () => {
-				if (!this.instance || !this.instance[id]) {
+			this.run = () => this.instances.reduce((configuration, instance) => {
+				if (!instance || !instance[id] || instance.condition === false) {
 					return configuration;
 				}
 
-				return this.instance[id](configuration);
-			};
+				return instance[id](configuration);
+			}, configuration);
 		}
 
 		async initializeObject() {
-			const pathToCustomizationFile = await scope.pathToCustomizationFile;
+			const pathsToCustomizationFiles = await scope.pathsToCustomizationFiles;
 
-			if (pathToCustomizationFile) {
-				const CustomizerClass = require(pathToCustomizationFile);
+			this.instances = [];
 
-				this.instance = new CustomizerClass();
-				this.instance.flowPackage = flowPackage;
-				this.instance.manifest = manifest;
-				this.instance.logger = await (await this.objectManager.get('logger')).createInstance(id);
+			if (pathsToCustomizationFiles.length) {
+				this.instances = await Promise.all(pathsToCustomizationFiles.map(async pathToCustomizationFile => {
+					const CustomizerClass = require(pathToCustomizationFile);
+					const instance = new CustomizerClass();
+
+					instance.flowPackage = flowPackage;
+					instance.manifest = manifest;
+					instance.logger = await (await this.objectManager.get('logger')).createInstance(id);
+					instance.browsers = await this.objectManager.get('browsers');
+
+					return instance;
+				}));
 			}
+
+			this.instances = this.instances || [];
 		}
 	};
 
