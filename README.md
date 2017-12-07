@@ -17,7 +17,7 @@ copy&pasted from another project, thus defeating any version control.
 
 So, we needed a system with batteries included, but easily replaceable - just like Neos itself.
 
-The result is Sitegeist.Monocle - an opinionated build framework based on webpack and postcss that is now used across all of our Neos projects.
+The result is Sitegeist.Excalibur - an opinionated build framework based on webpack and postcss that is now used across all of our Neos projects.
 
 It is supposed to work out of the box and with zero-configuration in most cases.
 
@@ -184,7 +184,7 @@ prototype(Vendor.SitePackage:Component.MyComponent) < prototype(PackageFactory.A
 }
 ```
 
-After applying this prototype, the Sitegeist.Excalibur runtime will automaically discover your component on the page and initialize the associated javascript on it.
+After applying this prototype, the Sitegeist.Excalibur runtime will automatically discover your component on the page and initialize the associated javascript on it.
 
 Therefore, your javascript **must** always export a function like this:
 
@@ -208,4 +208,4 @@ Originally, Sitegeist.Excalibur was supposed to ship with an abstraction of face
 
 So, if you're going to write frontend tests, we strongly encourage you to just install jest alongside Sitegeist.Excalibur and let it do it's magic :)
 
-Sitgeist.Excalibur does provide a little help though. If you are using jest to test your frontend and Sitegeist.Monocle to develop it withing a living styleguide environment, then you can use Sitegeist.Excalibur's jest helpers to render components individually.
+Sitgeist.Excalibur does provide a little help though. If you are using jest to test your frontend and Sitegeist.Monocle to develop it within a living styleguide environment, then you can use Sitegeist.Excalibur's jest helpers to render components individually.
