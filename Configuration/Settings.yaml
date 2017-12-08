@@ -1,0 +1,8 @@
+Sitegeist:
+  Excalibur:
+    features:
+      variableInjection:
+        enable: true
+        contextName: excalibur
+      javaScriptComponentAugmentation:
+        enable: true

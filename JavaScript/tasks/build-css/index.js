@@ -32,7 +32,7 @@ module.exports = class {
 				require('autoprefixer'),
 				require('precss'),
 				require('postcss-map')({
-					maps: [await this.flowPackage.settings]
+					maps: [await this.flowPackage.variables]
 				})
 			]
 		};

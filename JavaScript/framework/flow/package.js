@@ -109,8 +109,8 @@ module.exports = pathToPackage => {
 				.map(p => s(p).chompLeft(this.paths.root).chompLeft('/').toString());
 		}
 
-		get settings() {
-			return this.getFileContentsAsYaml('excalibur.styles.yaml');
+		get variables() {
+			return this.getFileContentsAsYaml('excalibur.variables.yaml');
 		}
 	};
 
