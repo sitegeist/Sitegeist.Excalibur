@@ -12,6 +12,11 @@ const assertPathExists = async (basePath, subPath = '') => {
 	return targetPath;
 };
 
+/**
+ * @module PackageManager
+ *
+ * A service to manage flow packages
+ */
 module.exports.singleton = async () => {
 	const packages = [];
 
@@ -66,6 +71,10 @@ module.exports.singleton = async () => {
 
 		map(...args) {
 			return packages.map(...args);
+		}
+
+		filter(...args) {
+			return packages.filter(...args);
 		}
 	};
 

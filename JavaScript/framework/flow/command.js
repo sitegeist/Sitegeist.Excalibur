@@ -3,6 +3,11 @@ const fs = require('fs-extra');
 const paramCase = require('param-case');
 const {spawn} = require('child-process-promise');
 
+/**
+ * @module Command
+ *
+ * A service to run Flow commands
+ */
 module.exports.singleton = () => {
 	const Command = class {
 		async initializeObject() {
