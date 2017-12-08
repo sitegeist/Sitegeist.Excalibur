@@ -1,5 +1,5 @@
 /* global document */
-module.exports = componentMap => {
+module.exports = (componentMap, sharedVariables) => {
 	const mountComponent = el => {
 		const componentIdentifier = el.getAttribute('data-component');
 		const initialize = componentMap[componentIdentifier];
@@ -7,7 +7,7 @@ module.exports = componentMap => {
 
 		if (typeof initializer === 'function') {
 			const props = el.dataset.props ? JSON.parse(el.dataset.props || '{}') : {};
-			initializer(el, props);
+			initializer(el, props, sharedVariables);
 			return;
 		}
 

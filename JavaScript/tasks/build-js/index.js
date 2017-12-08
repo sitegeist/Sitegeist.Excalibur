@@ -8,7 +8,7 @@ require('sitegeist-excalibur/JavaScript/runtime')({
 ${components.map(component => `
 	'${component.prototypeName}': require('${component.javascriptFile}')
 `)}
-});
+}, EXCALIBUR_SHARED_VARIABLES);
 `.trim();
 
 module.exports = class {
@@ -85,7 +85,13 @@ module.exports = class {
 						use: 'babel-loader'
 					}
 				]
-			}
+			},
+			plugins: [
+				new webpack.DefinePlugin({
+					'process.env.NODE_ENV': '"production"',
+					EXCALIBUR_SHARED_VARIABLES: JSON.stringify(await this.flowPackage.variables)
+				})
+			]
 		};
 	}
 

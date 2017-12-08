@@ -1,4 +1,4 @@
-# How to share variables between PHP and CSS
+# How to share variables between CSS, JavaScript and PHP
 
 excalibur.variables.yaml:
 ```yaml
@@ -23,5 +23,14 @@ button.css:
 	.button {
 		background-color: map(colors, red);
 	}
+}
+```
+
+button.js:
+```js
+export default function button(el, {}, {colors}) {
+	el.addEventListener('click', function handleClick() {
+		el.style.backgroundColor = colors.red;
+	});
 }
 ```
