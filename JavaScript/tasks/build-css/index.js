@@ -72,7 +72,7 @@ module.exports = class {
 	async watch() {
 		const run = () => this.run();
 
-		chokidar.watch(this.configuration.cssFilePattern, {ignoreInitial: true})
+		chokidar.watch(this.configuration.general.cssFilePattern, {ignoreInitial: true})
 			.on('ready', run)
 			.on('add', run)
 			.on('change', run)

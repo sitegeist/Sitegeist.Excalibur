@@ -16,10 +16,6 @@ module.exports = (TaskClass, runner, flowPackage, manifests) => {
 				}
 			};
 			this.run = (...args) => {
-				if (process.env.NODE_ENV !== 'production') {
-					this.hangInThere.start();
-				}
-
 				this.instance.logger
 					.debug(`Using configuration: ${JSON.stringify(this.instance.configuration, null, 4)}`, 3);
 
@@ -27,9 +23,6 @@ module.exports = (TaskClass, runner, flowPackage, manifests) => {
 			};
 			this.watch = (...args) => {
 				if (this.isWatchable) {
-					if (process.env.NODE_ENV !== 'production') {
-						this.hangInThere.start();
-					}
 					return this.instance.watch(...args);
 				}
 			};
@@ -37,7 +30,6 @@ module.exports = (TaskClass, runner, flowPackage, manifests) => {
 
 		async initializeObject() {
 			this.printErrors = await this.objectManager.get('task/printErrors');
-			this.hangInThere = await this.objectManager.get('logger/hangInThere');
 
 			this.instance = new TaskClass();
 
@@ -58,13 +50,11 @@ module.exports = (TaskClass, runner, flowPackage, manifests) => {
 
 			this.instance.success = () => {
 				this.instance.logger.success(`${this.instance.label} successfully completed :)`);
-				this.hangInThere.stop();
 				return 0;
 			};
 
 			this.instance.error = () => {
 				this.instance.logger.error(`${this.instance.label} failed :(`);
-				this.hangInThere.stop();
 				return 1;
 			};
 
