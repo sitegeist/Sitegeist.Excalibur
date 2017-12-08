@@ -20,15 +20,13 @@ module.exports = flowPackage => {
 
 						await task.configure();
 						await task.prepare();
-						await task[method]();
+						const result = await task[method]();
 
 						if (!this.isWatchMode && process.env.NODE_ENV !== 'production') {
 							this.hangInThere.stop();
 						}
 
-						if (this.isWatchMode) {
-							return new Promise(() => {});
-						}
+						return this.isWatchMode ? new Promise(() => {}) : result;
 					}
 				}));
 			};
