@@ -8,7 +8,7 @@ module.exports = (rootPath, ignoreFileName = '.excaliburignore', customizerFileP
 		async initializeObject() {
 			this.ignoreFilePatterns = [];
 
-			if (await fs.pathExists(path.join(rootPath, ignoreFileName))) {
+			if (ignoreFileName && await fs.pathExists(path.join(rootPath, ignoreFileName))) {
 				this.ignoreFilePatterns = (await fs.readFile(path.join(rootPath, ignoreFileName), 'utf8'))
 					.split('\n')
 					.slice(0, -1)
@@ -27,6 +27,7 @@ module.exports = (rootPath, ignoreFileName = '.excaliburignore', customizerFileP
 			return customizers.reduce(
 				async (value, customizer) => {
 					customizer.logger = await (await this.objectManager.get('logger')).createInstance(id);
+					customizer.browsers = await this.objectManager.get('browsers');
 
 					Object.keys(dependencies).forEach(dependency => {
 						customizer[dependency] = dependencies[dependency];

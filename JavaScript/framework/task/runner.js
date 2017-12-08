@@ -38,7 +38,7 @@ module.exports = flowPackage => {
 
 			this.packageManifest = await this.objectManager.get('manifest', flowPackage.paths.root);
 			this.distributionManifest = await this.objectManager.get('manifest', rootPath);
-			this.excaliburManifest = await this.objectManager.get('manifest', appPath, 'modifier/**/*.js');
+			this.excaliburManifest = await this.objectManager.get('manifest', appPath, '', 'modifier/**/*.js');
 		}
 	};
 
