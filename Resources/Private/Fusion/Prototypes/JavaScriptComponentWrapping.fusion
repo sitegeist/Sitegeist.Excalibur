@@ -1,6 +1,0 @@
-prototype(Sitegeist.Excalibur:JavaScriptComponentWrapping) {
-    @class = 'Sitegeist\\Excalibur\\Fusion\\JavaScriptComponentWrappingImplementation'
-
-    value = ${value}
-    props = ${props}
-}

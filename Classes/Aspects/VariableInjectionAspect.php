@@ -43,11 +43,11 @@ class VariableInjectionAspect
         $context[$this->contextName] = $this->getVariablesForPackage($packageName);
         $fusionRuntime->pushContextArray($context);
 
-        $result = $joinPoint->getAdviceChain()->proceed($joinPoint);
+        $renderedComponent = $joinPoint->getAdviceChain()->proceed($joinPoint);
 
         $fusionRuntime->popContext();
 
-        return $result;
+        return $renderedComponent;
     }
 
     /**
