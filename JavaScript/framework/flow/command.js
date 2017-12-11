@@ -25,11 +25,11 @@ module.exports.singleton = () => {
 
 		async run(command, options = {}) {
 			const commandString = `${this.flowExecutable} ${command} ${Object.keys(options).map(
-				key => ` --${paramCase(key)}="${options[key]}"`
+				key => ` --${paramCase(key)} "${options[key]}"`
 			)}`;
-			const childProcess = spawn(this.flowExecutable, [command, ...Object.keys(options).map(
-				key => ` --${paramCase(key)}="${options[key]}"`
-			)], {capture: ['stdout']});
+			const childProcess = spawn(this.flowExecutable, [command, ...[].concat(...Object.keys(options).map(
+				key => [`--${paramCase(key)}`, options[key]]
+			))], {capture: ['stdout']});
 
 			this.logger.debug(`Executing "${commandString.replace(this.rootPath, '.')}".`, 2);
 

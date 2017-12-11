@@ -47,7 +47,10 @@ module.exports = pathToPackage => {
 		 */
 		get packageKey() {
 			return this.getFileContentsAsJson('composer.json').then(composerJson => {
-				return composerJson.extra.neos['package-key'];
+				if (!composerJson || !composerJson.extra || !composerJson.extra.neos) {
+					return '';
+				}
+				return composerJson.extra.neos['package-key'] || '';
 			});
 		}
 

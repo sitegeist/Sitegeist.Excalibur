@@ -4,7 +4,8 @@ const get = async (dependency, ...args) => {
 	if (!objectManager) {
 		objectManager = await createObjectManager({
 			rootPath: process.cwd(),
-			appPath: __dirname
+			appPath: __dirname,
+			argv: {}
 		});
 	}
 
