@@ -86,7 +86,7 @@ class BuildCommandController extends CommandController
     public function printPackageInformationCommand()
     {
 		$info = [];
-		foreach ($this->packageManager->getFilteredPackages('active', null, 'neos-site') as $package) {
+		foreach ($this->packageManager->getFilteredPackages('available', null, 'neos-site') as $package) {
 			$packageKey = $package->getPackageKey();
 			$componentPathConvention = $this->componentPathConventionDiscoveryService
 				->getComponentPathConventionForPackage($packageKey);
