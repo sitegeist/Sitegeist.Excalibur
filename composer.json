@@ -4,7 +4,7 @@
     "name": "sitegeist/excalibur",
     "require": {
         "neos/flow": "*",
-        "neos/fusion": "^3.3 || 4.0 || dev-master",
+        "neos/fusion": "^3.3 || ^4.0 || dev-master",
         "packagefactory/atomicfusion": "*"
     },
     "autoload": {
